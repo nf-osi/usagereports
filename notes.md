@@ -37,7 +37,10 @@ A funder, I would like to know...
 #### What is the summary of usage in terms of secondary citations? ⭐⭐⭐ | 🔴 
 - This requires curation *outside* of the platform. Some platforms such as dbGaP can require that any publications using the data must be documented, in which case this information becomes part of the platform.
 
-#### What has been the trend in interest/downloads over this period? ⭐⭐⭐ | 🟢
+#### What has been the trend in interest/downloads over *this* report period? ⭐⭐⭐ | 🟢
+
+#### What has been the trend in interest/downloads compared to the *last* report period? ⭐⭐⭐ | 🟢
+- Note: not available for first report.
 
 #### What is the type breakdown of data being used? ⭐⭐⭐ | 🟢
 
