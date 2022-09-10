@@ -1,7 +1,10 @@
+### Intro
+
 This is a document outlining what we might wish to answer in a usage report, written in the form of user stories.
 Questions range from able to be easily answered **with data from the platform** to not answerable at all.
 Topics that are currently not feasible but important can lead to thinking about what/how other data can be collected.
 
+### Rubric
 Importance:
 - ⭐⭐⭐ / High 
 - ⭐⭐ / Medium
@@ -12,7 +15,8 @@ Feasibility
 - 🟡 / Painfully doable with platform data
 - 🔴 / Not doable with platform data
 
-A funder, I would like to know...
+
+### As a funder, I would like to know...
 
 #### How many studies changed status from "Under Embargo" to "Partially Available"/"Available" between the beginning to the end of the year (or whatever the report period may be). ⭐⭐⭐ | 🟢 
 - This would 1) give indication that data is being released on time and 2) help set up expectations for what downloads might look like based on releases.
