@@ -59,6 +59,9 @@ Feasibility
 - This may be somewhat answerable if there are only a handful of profiles to manually review, and they're *all* filled out, but the platform needs to require this information as part of the standard profile for this to be truly feasible.
 - Since platform data is lacking, another method is more _indirectly_ though surveys. 
 
+#### Are the data users linked to the same NF funding agency, another NF funding agency, another group on Synapse, or is independent? ⭐⭐ | 🟢
+- Measures potential connections with other groups.  
+
 #### How does my reach compare with other funding agencies (e.g. NTAP  vs CTF)? ⭐⭐ | 🟢
 - Data are on same platform and should be pretty much comparable.
 - Account for different number of projects/types of projects. 
