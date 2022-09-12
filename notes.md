@@ -1,8 +1,9 @@
-### Intro
+### Notes
 
-This is a document outlining what we might wish to answer in a usage report, written in the form of user stories.
-Questions range from able to be easily answered **with data from the platform** to not answerable at all.
-Topics that are currently not feasible but important can lead to thinking about what/how other data can be collected.
+This is a document outlining what we might wish to answer in a usage report, written in the form of funder user stories.
+Given **data from the platform**, questions range from being easily answerable to not answerable at all.
+Important but less feasible questions should be documented here in case future changes make them more tractable. 
+These questions might also lead to suggestions for what/how other data should be better collected. 
 
 ### Rubric
 Importance:
@@ -12,9 +13,19 @@ Importance:
 
 Feasibility
 - 🟢 / Doable with platform data
-- 🟡 / Painfully doable with platform data
+- 🟡 / Inconveniently to painfully doable with platform data
 - 🔴 / Not doable with platform data
 
+#### Implementation Matrix
+This matrix tries to summarize which questions will be pursued and included in the report according to `Importance` and `Feasibility`.
+
+|       | 🟢  | 🟡  | 🔴 |
+| ------| --  | -- | -- |
+| ⭐⭐⭐ | yes | yes | no  |
+| ⭐⭐   | yes |  ?  | no  |
+| ⭐     | ?  | no  | no  |
+
+---
 
 ### As a funder, I would like to know...
 
@@ -22,9 +33,10 @@ Feasibility
 - This would 1) give indication that data is being released on time and 2) help set up expectations for what downloads might look like based on releases.
 
 #### How long does it take for others to use the data once there is data released (for those projects that do see use). ⭐⭐ | 🟡  
-- Help understand the range of timelines on "returns" -- do researchers jump on the data within a month, or a year? 
+- Help understand the range of timelines on "returns" -- do researchers make use of data within a month, several months, a year, several years of release? 
 - Date of first download - Date status change.
-- "Data release" dates are not officially (and sometimes not accurately) tracked, so only have snapshots of the study table. 
+- "Data release" dates are not officially (and sometimes not accurately) tracked, and would have to query all weekly snapshots of the study table to get approximate transition. 
+- Suggests that "data release" should be tracked in a more principled manner especially if this is an important question to be pursued. 
 
 #### Which of the projects in my portfolio have seen the most usage in terms of absolute downloads? ⭐⭐⭐ | 🟢 
 - Top 20% of projects with the most impact/interest.
@@ -41,9 +53,9 @@ Feasibility
 #### What is the summary of usage in terms of secondary citations? ⭐⭐⭐ | 🔴 
 - This requires curation *outside* of the platform. Some platforms such as dbGaP can require that any publications using the data must be documented, in which case this information becomes part of the platform.
 
-#### What has been the trend in interest/downloads over *this* report period? ⭐⭐⭐ | 🟢
+#### What has been the trend in pageviews/downloads over *this* report period? ⭐⭐⭐ | 🟢
 
-#### What has been the trend in interest/downloads compared to the *last* report period? ⭐⭐⭐ | 🟢
+#### What has been the trend in pageviews/downloads compared to the *last* report period? ⭐⭐⭐ | 🟢
 - Note: not available for first report.
 
 #### What is the type breakdown of data being used? ⭐⭐⭐ | 🟢
@@ -55,11 +67,11 @@ Feasibility
 - This would *only* be available for data that requires a data use statement, and would need manual review to categorize the usage.
 
 #### What is the demographics of my data users? ⭐⭐ | 🔴
-- Grad students, post-docs, PIs, academic, industry? Where are they from?
-- This may be somewhat answerable if there are only a handful of profiles to manually review, and they're *all* filled out, but the platform needs to require this information as part of the standard profile for this to be truly feasible.
+- Grad students, post-docs, PIs, academic, industry? Where are they from, geographically?
+- This may be painfully answerable if there are only a handful of complete profiles to manually review, but the platform needs to require this information as part of the standard profile for this to be truly feasible.
 - Since platform data is lacking, another method is more _indirectly_ though surveys. 
 
-#### Are the data users linked to the same NF funding agency, another NF funding agency, another group on Synapse, or is independent? ⭐⭐ | 🟢
+#### Are the data users linked to the same NF funding agency, another NF funding agency, another group on Synapse, or independent? ⭐ | 🟢
 - Measures potential connections with other groups.  
 
 #### How does my reach compare with other funding agencies (e.g. NTAP  vs CTF)? ⭐⭐ | 🟢
