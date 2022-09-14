@@ -1,3 +1,13 @@
+sim_data_sankey_status <- function() {
+  status_data <- data.frame(Jan = c(rep("Intake", 10), rep("Active", 40), rep("Completed", 15)),
+                            June = c(rep("Active", 50), rep("Completed", 15)),
+                            Nov = c(rep("Active", 40), rep("Completed", 25))
+  )
+  status_data <- status_data %>%
+    ggsankey::make_long(Jan, June, Nov)
+  return(status_data)
+}
+
 sim_data_download_by_project <- function() {
   data <- data.frame(
     project = paste0("syn", 1:10),
