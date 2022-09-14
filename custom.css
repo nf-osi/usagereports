@@ -1,0 +1,49 @@
+/* Whole document: */
+body{
+  font-family: Helvetica;
+  font-size: 12pt;
+}
+
+.stat-box {
+  margin-right: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-header {
+  font-family: Helvetica;
+  font-size:14px;
+  color: #404B63;
+}
+
+
+.stat-value {
+  font-family: Helvetica;
+  font-size:20px;
+  color: #125E81;
+}
+
+.description {
+  font-family: Helvetica;
+  font-size:13px;
+  color: gray;
+}
+
+@page {
+  margin: 10mm;
+}
+
+.running-h1-title {
+  display: hidden !important;
+}
+
+.running-h1-title:before {
+  content: "" !important; 
+}
+
+.running-h2-title {
+  display: hidden !important;
+}
+
+.running-h2-title:before {
+  content: "" !important;
+}
