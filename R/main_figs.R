@@ -1,3 +1,6 @@
+library(tidyverse)
+library(ggsankey)
+
 #-- Block text elements --------------------------------------------------------#
 summary_stat <- function(value, header = NULL, description = NULL) {
   htmltools::div(class = "stat-box",
@@ -17,7 +20,7 @@ notes <- function(header, description) {
 #-- Graphs ---------------------------------------------------------------------#
 
 #' Sankey status transitions
-sankey_status <- function(data, palette) {
+plot_sankey_status <- function(data, palette) {
   p <- ggplot(data, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
     geom_sankey(flow.alpha = .4,
                 node.color = "gray30") +
@@ -34,7 +37,7 @@ sankey_status <- function(data, palette) {
 }
 
 #' Bar of downloads by data type
-bar_data_segment <- function(data, title) {
+plot_bar_data_segment <- function(data, title) {
   
   p <- ggplot(data, aes(x = Type, y = n, fill = Type)) +
       geom_bar(stat="identity") +
@@ -49,7 +52,7 @@ bar_data_segment <- function(data, title) {
 }
 
 #' Expects a `data.frame` with `project` and `downloads`.
-lollipop_download_by_project <- function(data, palette) {
+plot_lollipop_download_by_project <- function(data, palette) {
   # Horizontal
   p <- ggplot(data, aes(x = reorder(project, downloads), y = downloads)) +
       geom_segment(aes(x = reorder(project, downloads), 
@@ -70,12 +73,9 @@ lollipop_download_by_project <- function(data, palette) {
 } 
 
 #' Bar of downloads over time (day), grouped by project
-bar_project_date <- function(data, sum_data = NULL, palette) {
+plot_bar_project_date <- function(data, sum_data = NULL, palette) {
   p <- ggplot(data, aes(x = date, fill = project)) + 
     geom_bar(stat = "count") +
-    # geom_line(data = sum_data, aes(x = date, y = sum)) +
-    #geom_line(aes(y = zoo::rollmean ))
-    # geom_smooth() +
     theme_void() +
     scale_fill_manual(values = palette) +
     theme(legend.position="bottom")
