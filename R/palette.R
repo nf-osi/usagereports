@@ -11,4 +11,4 @@ palette <- list(primary = "#125E81",
                 warning = "#F7A700",
                 success = "#2699A7")
 
-generic_palette <-c("#376b8b", "#e9b4ce", "#392965", "#f2d7a6", "#0e8177", "#bc590b")
+generic_palette <-c("#376b8b", "#e9b4ce", "#392965", "#f2d7a6", "#0e8177", "#bc590b", "#748dcd", "#a15317")
