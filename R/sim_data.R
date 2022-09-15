@@ -47,3 +47,16 @@ sim_data_project_pageview_date <- function() {
   )
   return(data)
 }
+
+sim_data_assay_breakdown <- function() {
+  data <- data.frame(Type = c("Whole Exome Sequencing", "RNA-seq", "Imaging"),
+                     count = c(200, 500, 100))
+  return(data)
+  
+}
+
+sim_resource_type_breakdown <- function() {
+  data <- data.frame(Type = c("experimentalData", "metadata", "report"),
+                     count = c(700, 60, 40))
+  return(data)
+}
