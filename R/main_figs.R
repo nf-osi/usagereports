@@ -20,19 +20,17 @@ notes <- function(header, description) {
 #-- Graphs ---------------------------------------------------------------------#
 
 #' Sankey status transitions
-plot_sankey_status <- function(data, palette) {
+plot_sankey_status <- function(data, palette = data_status_palette) {
   p <- ggplot(data, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
     geom_sankey(flow.alpha = .4,
                 node.color = "gray30") +
     # geom_sankey_text(size = 5, color = "black") +
-    scale_fill_manual(values = c(Intake = palette$gray2, 
-                                 Active= palette$highlight, 
-                                 Completed= palette$purple1)) +
+    scale_fill_manual(values = palette) +
     theme_sankey(base_size = 18) +
     labs(x = NULL) +
     #theme(legend.position = "none",
     #      plot.title = element_text(hjust = .5)) +
-    ggtitle("Project Status")
+    ggtitle("Status Changes")
   return(p)
 }
 
