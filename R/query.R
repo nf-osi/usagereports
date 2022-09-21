@@ -13,7 +13,7 @@ library(nfportalutils)
 syn_login()
 
 # See synapseusagereports for example config file
-get_data_by_funding_agency <- function(config_file, fundingAgency = "NTAP", all = TRUE) {
+query_data_by_funding_agency <- function(config_file, fundingAgency = "NTAP", all = TRUE) {
   
   config <- yaml::yaml.load_file(config_file)
   con <- DBI::dbConnect(RMySQL::MySQL(),
