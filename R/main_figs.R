@@ -12,7 +12,7 @@ summary_stat <- function(value, header = NULL, description = NULL) {
 
 notes <- function(header, description) {
   htmltools::div(style = "display: flex; margin-bottom: 10px;",
-                 htmltools::div(style="flex: 1 1 0; margin-right: 20px;", header),
+                 htmltools::div(style="flex: 1 1 0; margin-right: 20px; font-size: 13px;", header),
                  htmltools::div(style="flex: 3 1 0;", class="description", description)
   )
 }
@@ -70,9 +70,11 @@ plot_lollipop_download_by_project <- function(data, palette) {
   return(p)
 } 
 
-#' Bar of downloads over time (day), grouped by project
-plot_bar_project_date <- function(data, sum_data = NULL, palette) {
-  p <- ggplot(data, aes(x = date, fill = project)) + 
+#' Bar of downloads over time (day), grouped by project or Sage (NF-OSI) vs. regular users
+#' Grouping by project becomes problematic
+#' when in the future there are 8+ projects, making this hard to read
+plot_downloads_datetime <- function(data, fill = "project", palette) {
+  p <- ggplot(data, aes_string(x = "date", fill = fill)) + 
     geom_bar(stat = "count") +
     theme_void() +
     scale_fill_manual(values = palette) +
