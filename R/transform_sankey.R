@@ -51,3 +51,12 @@ check_transition <- function(status_data) {
   result <- apply(status_data, 1, function(i) Reduce(check_transition, i))
   return(result)
 }
+
+growth_projects_data_available <- function(data_status, qualifying = c("Partially Available", "Available")) {
+  start <- names(data_status)[2] # first col is studyId
+  end <- names(data_status)[length(data_status)]
+  
+  n_start <- data_status[get(start) %in% qualifying, .N] 
+  n_end <- data_status[get(end) %in% qualifying, .N] 
+  return(n_end, n_start)
+}
