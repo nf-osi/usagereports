@@ -96,7 +96,7 @@ plot_lollipop_download_by_project <- function(data, palette) {
 #'
 #' Bar of downloads over time (day), grouped by project or Sage (NF-OSI) vs. regular users
 #' Grouping by project becomes problematic when in the future there are 8+ projects, making this hard to read
-#' @inheritParams plot_sankey_satus
+#' @inheritParams plot_sankey_status
 #' @param fill Variable to fill by, defaults to "project".
 #' @export
 #' @import ggplot2
