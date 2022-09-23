@@ -32,6 +32,8 @@ body{
   margin: 10mm;
 }
 
+
+/* Hides page numbers:
 .running-h1-title {
   display: hidden !important;
 }
@@ -40,10 +42,16 @@ body{
   content: "" !important; 
 }
 
+
 .running-h2-title {
   display: hidden !important;
 }
 
 .running-h2-title:before {
   content: "" !important;
+}
+*/
+
+.section-force-break {
+  break-after: page
 }
