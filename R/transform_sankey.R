@@ -19,6 +19,7 @@ sum_data_status_changes <- function(status_data) {
 #'
 #' @inheritParams sum_data_status_changes
 #' @param selected Timepoints *other* than first and last, which is already included by default.
+#' @export
 to_sankey_data <- function(status_data, selected) {
   first_last <- names(status_data)[c(2, length(status_data))]
   selected <- as.character(sort(as.Date(unique(c(first_last, selected)))))
@@ -68,6 +69,7 @@ check_transition <- function(status_data) {
 #'
 #' @inheritParams sum_data_status_changes
 #' @param qualifying Qualifying statuses.
+#' @export
 growth_projects_data_available <- function(status_data,
                                            qualifying = c("Partially Available", "Available")) {
   start <- names(status_data)[2] # first col is studyId
