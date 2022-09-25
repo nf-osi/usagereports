@@ -13,12 +13,10 @@ to_deidentified_export(
 \arguments{
 \item{data_dir}{Output files from data warehouse query that contains real synapse user ids.}
 
-\item{code_file}{A csv mapping the random ids (\code{code} column) to real synapse user ids (\code{userId} column).}
+\item{code_file}{A csv mapping the random ids (\code{code} column) to real synapse user ids (\code{userId} column).
+This is expected to be encrypted.}
 
-\item{key}{Key for decrypting \code{code_file}, defaults to using value of env var \code{USAGE_REPORT_KEY}.
-The key is in LastPass.}
-
-\item{synproject}{Id of parent project.}
+\item{key_rds}{Key file for decrypting \code{code_file}.}
 }
 \description{
 This processes the data warehouse outputs so that data is deidentified and can be stored

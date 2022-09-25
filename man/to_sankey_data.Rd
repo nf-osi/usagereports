@@ -2,10 +2,15 @@
 % Please edit documentation in R/transform_sankey.R
 \name{to_sankey_data}
 \alias{to_sankey_data}
-\title{Selected should be timepoints \emph{other} than first and last}
+\title{Massage to Sankey plot data}
 \usage{
 to_sankey_data(status_data, selected)
 }
+\arguments{
+\item{status_data}{Status data obtained from \code{query_data_status_snapshots}.}
+
+\item{selected}{Timepoints \emph{other} than first and last, which is already included by default.}
+}
 \description{
-Selected should be timepoints \emph{other} than first and last
+Massage to Sankey plot data
 }

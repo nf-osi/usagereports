@@ -3,11 +3,13 @@
 \name{sum_data_status_changes}
 \alias{sum_data_status_changes}
 \title{Auto-select most interesting timepoints and make data for sankey
-Helper to construct a table of most prominent transition points to help select which ones to use}
+Sum data status changes}
 \usage{
 sum_data_status_changes(status_data)
 }
+\arguments{
+\item{status_data}{Status data obtained from \code{query_data_status_snapshots}.}
+}
 \description{
-Auto-select most interesting timepoints and make data for sankey
-Helper to construct a table of most prominent transition points to help select which ones to use
+Helper to construct a table of most prominent transition points to help select which ones to use.
 }
