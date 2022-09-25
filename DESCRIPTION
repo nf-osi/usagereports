@@ -11,12 +11,16 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: 
+    cyphr,
     data.table,
     DBI,
+    dbplyr,
     dplyr,
     ggplot2,
     ggsankey,
     glue,
     googleAnalyticsR,
+    htmltools,
+    RMySQL,
     synapseusagereports,
     yaml
