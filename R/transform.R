@@ -7,9 +7,8 @@
 #'
 #' @param data_dir Output files from data warehouse query that contains real synapse user ids.
 #' @param code_file A csv mapping the random ids (`code` column) to real synapse user ids (`userId` column).
-#' @param key Key for decrypting `code_file`, defaults to using value of env var `USAGE_REPORT_KEY`.
-#' The key is in LastPass.
-#' @param synproject Id of parent project.
+#' This is expected to be encrypted.
+#' @param key_rds Key file for decrypting `code_file`.
 #' @export
 to_deidentified_export <- function(data_dir,
                                    code_file = "codes.csv",

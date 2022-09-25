@@ -1,6 +1,11 @@
 #' Auto-select most interesting timepoints and make data for sankey
 
-#' Helper to construct a table of most prominent transition points to help select which ones to use
+#' Sum data status changes
+#'
+#' Helper to construct a table of most prominent transition points to help select which ones to use.
+#'
+#' @param status_data Status data obtained from `query_data_status_snapshots`.
+#' @export
 sum_data_status_changes <- function(status_data) {
   # Find timepoints other than start and end
   PA <- apply(status_data, 1, function(x) match("Partially Available", x))
@@ -10,7 +15,10 @@ sum_data_status_changes <- function(status_data) {
   timepoints
 }
 
-#' Selected should be timepoints *other* than first and last
+#' Massage to Sankey plot data
+#'
+#' @inheritParams sum_data_status_changes
+#' @param selected Timepoints *other* than first and last, which is already included by default.
 to_sankey_data <- function(status_data, selected) {
   first_last <- names(status_data)[c(2, length(status_data))]
   selected <- as.character(sort(as.Date(unique(c(first_last, selected)))))
@@ -19,9 +27,13 @@ to_sankey_data <- function(status_data, selected) {
   return(sankey_data)
 }
 
-
+#' Sanity check valid transitions
+#'
+#' Helper for seeing inconsistent records for status changes...
+#' @inheritParams sum_data_status_changes
+#' @export
 check_transition <- function(status_data) {
-  
+
   is_valid_transition <- function(x1, x2) {
     if(x1 == 1) return(1L)
     valid_transitions <- list(
@@ -31,7 +43,7 @@ check_transition <- function(status_data) {
       c("Under Embargo", "Available"),
       c("Partially Available", "Available")
     )
-    
+
     # invalid_transition <- list(
     #   c("Pre-Synapse", "None"),
     #   c("None", "Under Embargo"),
@@ -47,16 +59,21 @@ check_transition <- function(status_data) {
       return(x2)
     }
   }
-  
+
   result <- apply(status_data, 1, function(i) Reduce(check_transition, i))
   return(result)
 }
 
-growth_projects_data_available <- function(data_status, qualifying = c("Partially Available", "Available")) {
-  start <- names(data_status)[2] # first col is studyId
-  end <- names(data_status)[length(data_status)]
-  
-  n_start <- data_status[get(start) %in% qualifying, .N] 
-  n_end <- data_status[get(end) %in% qualifying, .N] 
+#' Get change in projects with data available
+#'
+#' @inheritParams sum_data_status_changes
+#' @param qualifying Qualifying statuses.
+growth_projects_data_available <- function(status_data,
+                                           qualifying = c("Partially Available", "Available")) {
+  start <- names(status_data)[2] # first col is studyId
+  end <- names(status_data)[length(status_data)]
+
+  n_start <- status_data[get(start) %in% qualifying, .N]
+  n_end <- status_data[get(end) %in% qualifying, .N]
   return(n_end, n_start)
 }
