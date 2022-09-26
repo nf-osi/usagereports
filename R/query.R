@@ -97,20 +97,26 @@ query_file_snapshot <- function(con,
     # DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE
     query <- glue::glue('SELECT ID,DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE,PROJECT_ID,FILE_HANDLE_ID,NAME,IS_PUBLIC,IS_CONTROLLED,IS_RESTRICTED
                         FROM NODE_SNAPSHOT
-                        WHERE TIMESTAMP > {start_ts} AND TIMESTAMP < {end_ts} AND NODE_TYPE = "file" AND PROJECT_ID IN ({ids_list}) GROUP BY ID') #
+                        WHERE TIMESTAMP > {start_ts} AND TIMESTAMP < {end_ts} AND NODE_TYPE = "file" AND PROJECT_ID IN ({ids_list}) AND (IS_PUBLIC = 1 OR IS_CONTROLLED = 1) GROUP BY ID') #
     return(query)
   }
 
+  options(scipen = 999)
   start_query <- build_query(start_ids, start_date)
+  message(start_query)
   start_data <- DBI::dbGetQuery(con, start_query)
   start_data <- as.data.table(start_data)
-  start_data <- start_data[!duplicated(FILE_HANDLE_ID)]
-  start_avail <- start_data[IS_PUBLIC == 1 | IS_CONTROLLED == 1, .N] # Available is defined as public OR controlled access
+  start_avail <- start_data[, .N, by = PROJECT_ID]
+  fwrite(start_avail, "start_available_files.csv")
 
   end_query <-  build_query(end_ids, end_date, public = 0)
+  message(end_query)
   end_data <- DBI::dbGetQuery(con, end_query)
   end_data <- as.data.table(end_data)
-  end_avail <- end_data[IS_PUBLIC == 1 | IS_CONTROLLED == 1, .N]
+  end_avail <- end_data[IS_PUBLIC == 1 | IS_CONTROLLED == 1, .N, by = PROJECT_ID]
+  fwrite(end_avail, "end_available_files.csv")
+
+  return(result)
 }
 
 #' Query data status snapshots
