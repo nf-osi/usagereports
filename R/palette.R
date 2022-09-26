@@ -28,9 +28,9 @@ syn_palette <- function() {
 #'
 #' @export
 project_status_palette <- function() {
-  p <- c(`Pre-Synapse` = default_palette $gray2,
-         Active= default_palette $highlight,
-         Completed= default_palette $purple1)
+  p <- c(`Pre-Synapse` = default_palette()$gray2,
+         Active = default_palette()$highlight,
+         Completed = default_palette()$purple)
   return(p)
 }
 
@@ -38,10 +38,10 @@ project_status_palette <- function() {
 #'
 #' @export
 data_status_palette <- function() {
-  p <- c(`Pre-Synapse` = default_palette$gray1,
-         None = default_palette$purple1,
-         `Under Embargo`= default_palette$danger,
-         `Partially Available`= default_palette$warning,
-         Available = default_palette$success)
+  p <- c(`Pre-Synapse` = default_palette()$gray1,
+         None = default_palette()$purple1,
+         `Under Embargo`= default_palette()$danger,
+         `Partially Available`= default_palette()$warning,
+         Available = default_palette()$success)
   return(p)
 }
