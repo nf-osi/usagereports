@@ -4,26 +4,21 @@
 #' This is a wrapper building on synapseusagereports to download NF-relevant data,
 #' which saves data for each project as a separate .csv within folders organized by report type.
 #'
+#' @param con Connection object. If not given, `config_file` should be given.
 #' @param config_file YAML config file. See `synapseusagereports` package docs for example config file.
 #' @param fundingAgency An NF funding agency to query for.
 #' @param all Download for all projects associated with `fundingAgency`.
 #' @export
-query_data_by_funding_agency <- function(config_file, fundingAgency = "NTAP", all = TRUE) {
+query_data_by_funding_agency <- function(con = NULL,
+                                         config_file = NULL,
+                                         start_date,
+                                         end_date,
+                                         fundingAgency = "NTAP",
+                                         all = TRUE) {
 
-  config <- yaml::yaml.load_file(config_file)
-  con <- DBI::dbConnect(RMySQL::MySQL(),
-                      port = config$port,
-                      user = config$username,
-                      password = config$password,
-                      host = config$host,
-                      dbname = config$db)
-
-  cat("Connection details...\n")
-  dbplyr::db_connection_describe(con) # dbListTables(con)
+  if(!exists("con")) con <- connect_to_dw(config_file)
 
   query_types <- c("filedownloadrecord", "download")
-  end_date <- Sys.Date()
-  start_date <- Sys.Date() - 180
 
   if(all) {
    FA <- .syn$tableQuery("SELECT studyId,dataStatus FROM syn16787123 WHERE fundingAgency has ('{fundingAgency}')")
@@ -45,6 +40,77 @@ query_data_by_funding_agency <- function(config_file, fundingAgency = "NTAP", al
     }
 
   }
+}
+
+#' Helper for establishing connection
+#'
+#' @inheritParams query_data_by_funding_agency
+#'
+#' @return Connection object.
+#' @export
+connect_to_dw <- function(config_file) {
+
+  config <- yaml::yaml.load_file(config_file)
+  con <- DBI::dbConnect(RMySQL::MySQL(),
+                        port = config$port,
+                        user = config$username,
+                        password = config$password,
+                        host = config$host,
+                        dbname = config$db)
+
+  cat("Connection details...\n")
+  message(dbplyr::db_connection_describe(con))
+  cat("Tables...\n")
+  cat(DBI::dbListTables(con), sep = "\n")
+  return(con)
+}
+
+
+#' Query available files within the first and last month of report period
+#'
+#' The first file snapshot scope (first month of report period) includes unique files for the projects listed in `start_id_file`.
+#' The second file snapshot scope (last month of report period) includes unique files for projects listed in `end_id_file`.
+#' Usually, there are more projects in the `end_id_file` because of new project releases during the report period;
+#' and unless something is wrong, all projects in `start` should be in `end` (there should be no "un-release" phenomenon).
+#' For each snapshot, we filter for "available" files, which are either public or controlled access, and calculate a simple delta.
+#' @inheritParams query_data_by_funding_agency
+#' @param
+query_file_snapshot <- function(con,
+                          config_file = NULL,
+                          start_date,
+                          end_date,
+                          start_id_file,
+                          end_id_file) {
+
+  if(!exists("con")) con <- connect_to_dw(config_file)
+
+  start_ids <- as.numeric(gsub("syn", "", readLines(start_id_file)))
+  end_ids <- as.numeric(gsub("syn", "", readLines(end_id_file)))
+
+  build_query <- function(ids, index_date) {
+
+    ids_list <- glue::glue_collapse(ids, sep = ",")
+
+    # Construct timestamp ranges
+    start_ts <- as.numeric(as.POSIXct(lubridate::ymd(index_date))) * 1000
+    end_ts <- as.numeric(as.POSIXct(lubridate::`%m+%`(lubridate::ymd(index_date), months(1)))) * 1000
+    # DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE
+    query <- glue::glue('SELECT ID,DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE,PROJECT_ID,FILE_HANDLE_ID,NAME,IS_PUBLIC,IS_CONTROLLED,IS_RESTRICTED
+                        FROM NODE_SNAPSHOT
+                        WHERE TIMESTAMP > {start_ts} AND TIMESTAMP < {end_ts} AND NODE_TYPE = "file" AND PROJECT_ID IN ({ids_list}) GROUP BY ID') #
+    return(query)
+  }
+
+  start_query <- build_query(start_ids, start_date)
+  start_data <- DBI::dbGetQuery(con, start_query)
+  start_data <- as.data.table(start_data)
+  start_data <- start_data[!duplicated(FILE_HANDLE_ID)]
+  start_avail <- start_data[IS_PUBLIC == 1 | IS_CONTROLLED == 1, .N] # Available is defined as public OR controlled access
+
+  end_query <-  build_query(end_ids, end_date, public = 0)
+  end_data <- DBI::dbGetQuery(con, end_query)
+  end_data <- as.data.table(end_data)
+  end_avail <- end_data[IS_PUBLIC == 1 | IS_CONTROLLED == 1, .N]
 }
 
 #' Query data status snapshots
