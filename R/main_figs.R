@@ -1,29 +1,3 @@
-#-- Block text elements --------------------------------------------------------#
-
-#' Summary stat block element
-#'
-#' @param header Title for stat value.
-#' @param value Stat value.
-#' @param description Description or stat value (1-2 sentences).
-#' @export
-summary_stat <- function(value, header = NULL, description = NULL) {
-  htmltools::div(class = "stat-box",
-                 htmltools::div(class="stat-header", header),
-                 htmltools::div(class="stat-value", value),
-                 htmltools::span(class="description", description),
-  )
-}
-
-#' Notes block element
-#' @inheritParams summary_stat
-#' @export
-notes <- function(header, description) {
-  htmltools::div(style = "display: flex; margin-bottom: 10px;",
-                 htmltools::div(style="flex: 1 1 0; margin-right: 20px; font-size: 13px;", header),
-                 htmltools::div(style="flex: 3 1 0;", class="description", description)
-  )
-}
-
 #-- Graphs ---------------------------------------------------------------------#
 
 #' Sankey status transitions
@@ -43,6 +17,19 @@ plot_sankey_status <- function(data, palette = data_status_palette) {
     #theme(legend.position = "none",
     #      plot.title = element_text(hjust = .5)) +
     ggtitle("Status Changes")
+  return(p)
+}
+
+#' Bar plot comparing files available
+#'
+#' This expects a summary of files available by month.
+#' @inheritParams plot_sankey_status
+#' @export
+plot_bar_files_available <- function(data, palette = c("#af316c", "#125E81")) {
+  p <- ggplot(data, aes(x = Month, y = Files, fill = Month)) +
+    geom_col() +
+    scale_fill_manual(values = palette) +
+    theme_light()
   return(p)
 }
 
