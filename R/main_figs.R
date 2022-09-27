@@ -109,3 +109,14 @@ plot_col_pageview_ <- function(data) {
     theme_light()
 }
 
+#' Dot plot comparing pageviews for projects with released vs unreleased data
+#'
+#' @inheritParams plot_sankey_status
+plot_dot_pageviews <- function(data) {
+  p <- ggplot(data, aes(x = data_released, y = sum_pageviews, fill = data_released)) +
+    geom_violin(alpha = 0.5) +
+    geom_dotplot(binaxis = "y", stackdir = 'center') +
+    scale_fill_manual(values = c("#af316c", "#376b8b")) +
+    theme_minimal()
+  p
+}
