@@ -79,7 +79,7 @@ plot_lollipop_download_by_project <- function(data, palette) {
   return(p)
 }
 
-#' Column plot of downloads over time
+#' Bar plot of downloads over time
 #'
 #' Bar of downloads over time (day), grouped by project or Sage (NF-OSI) vs. regular users
 #' Grouping by project becomes problematic when in the future there are 8+ projects, making this hard to read
@@ -98,5 +98,14 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
 }
 
 
-
+#' Column plot comparing pageviews for projects with released vs unreleased data
+#'
+#' @inheritParams plot_sankey_status
+plot_col_pageview_ <- function(data) {
+  ggplot(data, aes(x = reorder(project, sum_pageviews), y = sum_pageviews, fill = data_released)) +
+    geom_col() +
+    facet_wrap(~ data_released, scales = "free_x") +
+    scale_fill_manual(values = c("#af316c", "#376b8b")) +
+    theme_light()
+}
 
