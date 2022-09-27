@@ -21,8 +21,8 @@ query_ga <- function(projects,
                          dim_filters = filter_clause)
 
   pv <- as.data.table(pv)
-  # Parse pagePath to synIds
-  pv[, synId := regmatches(pagePath, regexpr("syn[0-9]+", pagePath))]
+  # Parse pagePath to project syn Ids
+  pv[, project := regmatches(pagePath, regexpr("syn[0-9]+", pagePath))]
 
   return(pv)
 }
