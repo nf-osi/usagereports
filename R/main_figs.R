@@ -25,7 +25,7 @@ plot_sankey_status <- function(data, palette = data_status_palette) {
 #' This expects a summary of files available by month.
 #' @inheritParams plot_sankey_status
 #' @export
-plot_bar_files_available <- function(data, palette = c("#af316c", "#125E81")) {
+plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
   p <- ggplot(data, aes(x = Month, y = Files, fill = Month)) +
     geom_col() +
     scale_fill_manual(values = palette) +
