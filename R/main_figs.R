@@ -88,11 +88,16 @@ plot_lollipop_download_by_project <- function(data, palette) {
 #' @export
 #' @import ggplot2
 plot_downloads_datetime <- function(data, fill = "project", palette) {
+
+  data$date <- as.Date(data$date)
   p <- ggplot(data, aes_string(x = "date", fill = fill)) +
     geom_bar(stat = "count") +
-    theme_void() +
     scale_fill_manual(values = palette) +
-    theme(legend.position="bottom")
+    theme_classic() +
+    ylab("Count") +
+    xlab("") +
+    scale_x_date(date_breaks = "2 weeks") +
+    theme(legend.position = "bottom", axis.line.y = element_blank())
 
   return(p)
 }
