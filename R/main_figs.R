@@ -113,10 +113,14 @@ plot_col_pageview_ <- function(data) {
 #'
 #' @inheritParams plot_sankey_status
 plot_dot_pageviews <- function(data) {
-  p <- ggplot(data, aes(x = data_released, y = sum_pageviews, fill = data_released)) +
+  # Recode data_released
+  data$status <- ifelse(data$data_released, "Released data", "No released data")
+  p <- ggplot(data, aes(x = status, y = sum_pageviews, fill = status)) +
     geom_violin(alpha = 0.5) +
     geom_dotplot(binaxis = "y", stackdir = 'center') +
-    scale_fill_manual(values = c("#af316c", "#376b8b")) +
+    scale_fill_manual(values = c("#af316c", "#376b8b"), name = NULL) +
+    xlab("Project status") +
+    ylab("Number of pageviews") +
     theme_minimal()
   p
 }
