@@ -35,3 +35,12 @@ summary_stat <- function(value,
                  htmltools::span(class="description", description),
   )
 }
+
+
+#' Placeholder
+#' 
+placeholder <- function() {
+  ggplot() + theme_void() + 
+    geom_text(aes(0,0, label = "Place plot here"), size = 20) +
+    theme(panel.background = element_rect("lightgray"))
+}
