@@ -120,3 +120,18 @@ plot_dot_pageviews <- function(data) {
     theme_minimal()
   p
 }
+
+#' Bipartite network connecting users and projects
+#'
+#' @inheritParams plot_sankey_status
+#' @import igraph
+plot_bipartite <- function(data) {
+  g <- graph.data.frame(user_project, directed = TRUE)
+  V(g)$type <- igraph::bipartite.mapping(g)$type
+  V(g)$color <- ifelse(V(g)$type,  "#6fbeb8",  "#af316c")
+  V(g)$label.color <-  ifelse(V(g)$type, "black", "white")
+  V(g)$label.family <- "sans"
+  V(g)$size <- ifelse(V(g)$type, 30,  20)
+  plot(g, layout = layout_with_fr)
+  # return(g)
+}
