@@ -171,3 +171,19 @@ query_data_status_snapshots <- function(vRange,
   return(data_status)
 }
 
+#' Query annotations
+#'
+#' Query annotations for files to faciliate assay, etc. breakdown
+#'
+#' @param file_ids Vector of file ids.
+#' @param fileview Fileview id, which may vary for the portal. Defaults to NF's `Portal - Files`.
+#' @param attributes Vector of relevant metadata attributes for breakdown, which may vary for the portal.
+#' Defaults to `assay` and `dataType`.
+query_annotation <- function(file_ids, fileview = "syn16858331", attributes = c("assay", "dataType")) {
+  # unique_file_ids <- download_released_external[, unique(id)]
+  ids_list <- glue::glue_collapse(file_ids, sep = ",")
+  attributes <- glue::glue_collapse(attributes, sep = ",")
+  meta <- .syn$tableQuery(glue::glue("SELECT id,{attributes} FROM {fileview} WHERE id in ({ids_list})"))
+  meta <- as.data.table(meta$asDataFrame())
+  return(meta)
+}
