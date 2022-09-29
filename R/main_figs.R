@@ -11,7 +11,7 @@ plot_sankey_status <- function(data, palette = data_status_palette) {
     ggsankey::geom_sankey(flow.alpha = .4,
                 node.color = "gray30") +
     # geom_sankey_text(size = 5, color = "black") +
-    scale_fill_manual(values = palette) +
+    scale_fill_manual(values = palette, name = "Data status") +
     ggsankey::theme_sankey(base_size = 18) +
     labs(x = NULL) +
     #theme(legend.position = "none",
@@ -99,7 +99,7 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
     theme_classic() +
     ylab("Count") +
     xlab("") +
-    ggtitle("Downloads across projects with released data over the report period") +
+    ggtitle("Downloads across projects over the report period") +
     scale_x_date(date_breaks = "2 weeks") +
     theme(legend.position = "bottom", axis.line.y = element_blank(),
           plot.title = element_text(size = 28, margin = margin(0,0,30,0)),
@@ -130,7 +130,7 @@ plot_dot_pageviews <- function(data) {
     geom_violin(alpha = 0.5) +
     geom_dotplot(binaxis = "y", stackdir = 'center') +
     scale_fill_manual(values = c("#af316c", "#376b8b"), name = NULL) +
-    xlab("Project status") +
+    xlab("Project data status") +
     ylab("Number of pageviews") +
     theme_minimal()
   p
