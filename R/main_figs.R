@@ -70,11 +70,14 @@ plot_lollipop_download_by_project <- function(data, palette) {
       geom_point(color = palette$highlight, size = 5) +
       theme_light() +
       labs(x = NULL) +
+      ggtitle("Download requests by project") +
       coord_flip() +
       theme(
         panel.grid.major.y = element_blank(),
         panel.border = element_blank(),
-        axis.ticks.y = element_blank()
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 23, margin = margin(0,0,30,0)),
+        plot.title.position = "plot"
         )
   return(p)
 }
@@ -96,8 +99,11 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
     theme_classic() +
     ylab("Count") +
     xlab("") +
+    ggtitle("Downloads across projects with released data over the report period") +
     scale_x_date(date_breaks = "2 weeks") +
-    theme(legend.position = "bottom", axis.line.y = element_blank())
+    theme(legend.position = "bottom", axis.line.y = element_blank(),
+          plot.title = element_text(size = 28, margin = margin(0,0,30,0)),
+          plot.title.position = "plot")
 
   return(p)
 }
