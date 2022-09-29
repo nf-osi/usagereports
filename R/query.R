@@ -178,8 +178,10 @@ query_data_status_snapshots <- function(vRange,
 #' @param file_ids Vector of file ids.
 #' @param fileview Fileview id, which may vary for the portal. Defaults to NF's `Portal - Files`.
 #' @param attributes Vector of relevant metadata attributes for breakdown, which may vary for the portal.
-#' Defaults to `assay` and `dataType`.
-query_annotation <- function(file_ids, fileview = "syn16858331", attributes = c("assay", "dataType")) {
+#' Defaults to NF core attributes.
+query_annotation <- function(file_ids,
+                             fileview = "syn16858331",
+                             attributes = c("resourceType", "assay", "dataType")) {
   # unique_file_ids <- download_released_external[, unique(id)]
   ids_list <- glue::glue_collapse(file_ids, sep = ",")
   attributes <- glue::glue_collapse(attributes, sep = ",")
