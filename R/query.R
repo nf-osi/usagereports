@@ -175,17 +175,31 @@ query_data_status_snapshots <- function(vRange,
 #'
 #' Query annotations for files to faciliate assay, etc. breakdown
 #'
-#' @param file_ids Vector of file ids.
+#' @param file_ids Vector of numeric file ids (without "syn" prefix).
 #' @param fileview Fileview id, which may vary for the portal. Defaults to NF's `Portal - Files`.
+#' If `NULL`, for when the fileview does not exist or contain the files in scope,
+#' this will use alternative method of `get_annotations`, which will be slower but retrieves most up-to-date data,
+#' which is not guaranteed with a fileview.
 #' @param attributes Vector of relevant metadata attributes for breakdown, which may vary for the portal.
 #' Defaults to NF core attributes.
 query_annotation <- function(file_ids,
                              fileview = "syn16858331",
                              attributes = c("resourceType", "assay", "dataType")) {
-  # unique_file_ids <- download_released_external[, unique(id)]
-  ids_list <- glue::glue_collapse(file_ids, sep = ",")
-  attributes <- glue::glue_collapse(attributes, sep = ",")
-  meta <- .syn$tableQuery(glue::glue("SELECT id,{attributes} FROM {fileview} WHERE id in ({ids_list})"))
-  meta <- as.data.table(meta$asDataFrame())
+
+  if(is.null(fileview)) {
+    meta <- list()
+    for(i in file_ids) {
+      dict <- .syn$get_annotations(i)
+      metaset <- lapply(attributes, function(x) tryCatch(dict[[x]], error = function(e) NA_character_))
+      meta[[paste0("syn", i)]] <- metaset
+    }
+    meta <- rbindlist(meta, idcol = "id")
+    setnames(meta, c("id", attributes))
+  } else {
+    ids_list <- glue::glue_collapse(file_ids, sep = ",")
+    attributes <- glue::glue_collapse(attributes, sep = ",")
+    meta <- .syn$tableQuery(glue::glue("SELECT id,{attributes} FROM {fileview} WHERE id in ({ids_list})"))
+    meta <- as.data.table(meta$asDataFrame())
+  }
   return(meta)
 }
