@@ -36,22 +36,50 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
 #' Bar plot of downloads by data type
 #'
 #' @inheritParams plot_sankey_status
-#' @param title Title of plot.
+#' @param rdata
+#' @param adata
+#' @param donut Display as donut/sunburst-like chart.
 #' @export
 #' @import ggplot2
-plot_bar_data_segment <- function(data, title) {
+plot_data_segment <- function(rdata,
+                              adata,
+                              assay_palette,
+                              resource_palette = resource_type_palette(),
+                              donut = FALSE) {
 
-  p <- ggplot(data, aes(x = Type, y = n, fill = Type)) +
-      geom_bar(stat="identity") +
-      scale_fill_manual(values = c(Genomics = "#4DBBD5FF", Imaging = "#E64B35FF", `Other` = "gray")) +
-      theme_minimal() +
-      xlab("Data Type Category") +
-      ylab("Downloads") +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  p <- ggplot() +
+    geom_bar(data = rdata, aes(x = type, y = proportion, fill = resourceType),
+             stat = "identity", position = "stack", color = "white") +
+    scale_fill_manual(values = resource_palette, name = "Type") +
+    ggnewscale::new_scale_fill() +
+    geom_bar(data = adata, aes(x = type, y = proportion, fill = assay),
+             stat = "identity", position = "stack", color = "white") +
+    scale_fill_manual(values = assay_palette, name = "Assay") +
+    scale_x_discrete(labels = c("Assay", "Type")) # limits = c("resourceType", "assay"))
+
+  if(donut) {
+    p <- p + theme_void() +
+      coord_polar("y")
+  } else {
+    p <- p +
+      theme_classic() +
+      xlab("") +
+      ylab("") +
+      theme(axis.text.y = element_text(size = 12),
+            axis.ticks.y = element_blank()) +
       coord_flip()
+  }
+  p <- p + ggtitle("Characterization of data requested") +
+    theme(legend.position = "bottom", axis.line.y = element_blank(),
+          plot.title = element_text(size = 16, margin = margin(0,0,30,0)),
+          plot.title.position = "plot",
+          legend.background = element_rect(color = "gray"),
+          legend.text = element_text(size = 5),
+          legend.box = "vertical",
+          legend.margin = margin(10,10,10,10))
   return(p)
-
 }
+
 
 #' Lollipop plot of downloads by project.
 #' Expects a `data.frame` with `project` and `downloads`.
