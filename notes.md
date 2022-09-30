@@ -58,7 +58,15 @@ This matrix tries to summarize which questions will be pursued and included in t
 #### What has been the trend in pageviews/downloads compared to the *last* report period? ⭐⭐⭐ | 🟢
 - Note: not available for first report.
 
-#### What is the type breakdown of data being used? ⭐⭐⭐ | 🟢
+#### Per project, what is the total number of unique users who have downloaded data? ⭐⭐⭐ | 🟡
+- The concept of a "download" needs to be refined in the backend as it currently includes any time a pre-signed url is created (e.g. file previews, table downloads (maybe we want this?), actual downloads...)
+
+#### What is the total number of unique users who have downloaded data? ⭐⭐⭐ | 🟡
+- Note: only relevant after the first data release.
+
+#### What is the data type breakdown of data being used? ⭐⭐⭐ | 🟢
+
+#### What is the assay breakdown of data being used? ⭐⭐⭐ | 🟢
 
 #### How do data users learn about the data -- directly through the portal, the publication, newsletter/social media, word-of-mouth, something else? ⭐⭐ | 🔴 
 
@@ -71,8 +79,9 @@ This matrix tries to summarize which questions will be pursued and included in t
 - This may be painfully answerable if there are only a handful of complete profiles to manually review, but the platform needs to require this information as part of the standard profile for this to be truly feasible.
 - Since platform data is lacking, another method is more _indirectly_ though surveys. 
 
-#### Are the data users linked to the same NF funding agency, another NF funding agency, another group on Synapse, or independent? ⭐ | 🟢
+#### Are the data users linked to the same NF funding agency, another NF funding agency, another group on Synapse, or independent? ⭐ | 🟡
 - Measures potential connections with other groups.  
+- Requires defining what "linked to" really means, particularly within NF funding agencies (many PIs are funded by more than one of our partner-funders). 
 
 #### How does my reach compare with other funding agencies (e.g. NTAP  vs CTF)? ⭐⭐ | 🟢
 - Data are on same platform and should be pretty much comparable.
