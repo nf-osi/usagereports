@@ -13,7 +13,8 @@ The collection of functions in `R` are:
 ## Diagram
 
 Overall, the functions can be put together in the manner represented below to generate the desired figures.
-Figures are numbered by the order in which they appear.
+Figures are approximately numbered by the order in which they appear. 
+(This will shift slightly as the report format is finalized.)
 
 ```mermaid
 flowchart TD
