@@ -148,6 +148,7 @@ plot_col_pageview_ <- function(data) {
     theme_light()
 }
 
+
 #' Dot plot comparing pageviews for projects with released vs unreleased data
 #'
 #' @inheritParams plot_sankey_status
@@ -163,6 +164,43 @@ plot_dot_pageviews <- function(data) {
     theme_minimal()
   p
 }
+
+
+#' Plot visitors
+#'
+#' Plot unique visitors by project, meant to complement \link{`plot_dot_pageviews`}.
+#'
+#' @param data Data from Google Analytics, something like `ga_data`.
+#' @param pictogram Does additional fun stuff with user pictograms, defaults to `FALSE`.
+#' @export
+plot_bar_visitors <- function(data, pictogram = FALSE) {
+
+  p <- ggplot() +
+    geom_bar(data = data, aes(x = max_users, y = factor(project)), stat = "identity", fill = default_palette()$primary) +
+    theme_classic() +
+    xlab("Visitors") +
+    ylab("Project") +
+    ggtitle("Unique visitors by project") +
+    theme(legend.position = "bottom", axis.line.y = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(size = 26, margin = margin(0,0,30,0)),
+          plot.title.position = "plot")
+
+  if(pictogram) {
+    u_pict <- data.frame(project = unlist(Map(rep, data$project, data$max_users)),
+                         x = unlist(sapply(data$max_users, function(n) 1:n - 0.5) ))
+    p <- p + geom_text(data = u_pict, aes(x = x, y = factor(project)), label = "\U1f468", size = 6)
+  }
+
+  return(p)
+}
+
+
+#' Plot scatter of pageviews x visitors
+#'
+#' This is an alternative that presents pagesviews and visitors together instead of
+#' separately in \link{`plot_dot_pageviews`} and \link{plot_bar_visitors}
+
 
 #' Bipartite network connecting users and projects
 #'
