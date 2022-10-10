@@ -38,6 +38,10 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
 #' @inheritParams plot_sankey_status
 #' @param rdata Resource type annotation data.
 #' @param adata Assay type annotation data.
+#' @param assay_palette Color palette for assays,
+#' which might need more customization since assay annotations can be somewhat project-specific.
+#' @param resource_palette Color palette for resources -- default uses `resource_type_palette()`,
+#' but provide a custom palette if annotations are project-specific.
 #' @param donut Display as donut/sunburst-like chart.
 #' @export
 #' @import ggplot2

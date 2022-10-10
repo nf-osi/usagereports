@@ -8,6 +8,8 @@
 #' @param config_file YAML config file. See `synapseusagereports` package docs for example config file.
 #' @param fundingAgency An NF funding agency to query for.
 #' @param all Download for all projects associated with `fundingAgency`.
+#' @param start_date The start data of the report period -- should be first day of some month.
+#' @param end_date End date of report period, should be last day of the month six months from `start_date`.
 #' @export
 query_data_by_funding_agency <- function(con = NULL,
                                          config_file = NULL,
