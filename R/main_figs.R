@@ -156,6 +156,7 @@ plot_col_pageview_ <- function(data) {
 #' Dot plot comparing pageviews for projects with released vs unreleased data
 #'
 #' @inheritParams plot_sankey_status
+#' @export
 plot_dot_pageviews <- function(data) {
   # Recode data_released
   data$status <- ifelse(data$data_released, "Released data", "No released data")
@@ -207,6 +208,7 @@ plot_bar_visitors <- function(data, pictogram = FALSE) {
 #'
 #' @inheritParams plot_bar_visitors
 #' @param cutoff Cutoff based on visitor number; projects above this have labels that help highlight them as more popular.
+#' @export
 plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
 
   p <- ggplot(data, aes(x = max_users, y = sum_pageviews, size = max_users, color = data_release_group, label = project)) +
@@ -232,6 +234,7 @@ plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
 #'
 #' @inheritParams plot_sankey_status
 #' @import igraph
+#' @export
 plot_bipartite <- function(data) {
   g <- graph.data.frame(user_project, directed = TRUE)
   V(g)$type <- igraph::bipartite.mapping(g)$type
