@@ -2,7 +2,7 @@
 % Please edit documentation in R/main_figs.R
 \name{plot_downloads_datetime}
 \alias{plot_downloads_datetime}
-\title{Column plot of downloads over time}
+\title{Bar plot of downloads over time}
 \usage{
 plot_downloads_datetime(data, fill = "project", palette)
 }

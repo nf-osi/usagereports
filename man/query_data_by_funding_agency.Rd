@@ -4,9 +4,18 @@
 \alias{query_data_by_funding_agency}
 \title{Query wrapper to get data warehouse data}
 \usage{
-query_data_by_funding_agency(config_file, fundingAgency = "NTAP", all = TRUE)
+query_data_by_funding_agency(
+  con = NULL,
+  config_file = NULL,
+  start_date,
+  end_date,
+  fundingAgency = "NTAP",
+  all = TRUE
+)
 }
 \arguments{
+\item{con}{Connection object. If not given, \code{config_file} should be given.}
+
 \item{config_file}{YAML config file. See \code{synapseusagereports} package docs for example config file.}
 
 \item{fundingAgency}{An NF funding agency to query for.}

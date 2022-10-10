@@ -12,5 +12,6 @@ query_ga(projects, date_range)
 \item{date_range}{Start and end date.}
 }
 \description{
-Make sure already authenticated. Queries for pageviews and users.
+Wrapper to query for pageviews and users.
+Make sure already authenticated with \code{googleAnalyticsR::ga_auth()}.
 }
