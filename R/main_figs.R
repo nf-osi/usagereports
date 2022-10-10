@@ -173,7 +173,7 @@ plot_dot_pageviews <- function(data) {
 
 #' Plot visitors
 #'
-#' Plot unique visitors by project, meant to complement \link{`plot_dot_pageviews`}.
+#' Plot unique visitors by project, meant to complement `plot_dot_pageviews`.
 #'
 #' @param data Data from Google Analytics, something like `ga_data`.
 #' @param pictogram Does additional fun stuff with user pictograms, defaults to `FALSE`.
@@ -204,7 +204,7 @@ plot_bar_visitors <- function(data, pictogram = FALSE) {
 #' Plot scatter of pageviews x visitors
 #'
 #' This is an alternative that presents pagesviews and visitors together instead of
-#' separately in \link{`plot_dot_pageviews`} and \link{`plot_bar_visitors`}.
+#' separately in `plot_dot_pageviews` and `plot_bar_visitors`.
 #'
 #' @inheritParams plot_bar_visitors
 #' @param cutoff Cutoff based on visitor number; projects above this have labels that help highlight them as more popular.
