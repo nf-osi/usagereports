@@ -21,6 +21,7 @@ Imports:
     glue,
     googleAnalyticsR,
     htmltools,
+    igraph,
     RMySQL,
     synapseusagereports,
     yaml
