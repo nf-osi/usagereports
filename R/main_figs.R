@@ -36,8 +36,8 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
 #' Bar plot of downloads by data type
 #'
 #' @inheritParams plot_sankey_status
-#' @param rdata
-#' @param adata
+#' @param rdata Resource type annotation data.
+#' @param adata Assay type annotation data.
 #' @param donut Display as donut/sunburst-like chart.
 #' @export
 #' @import ggplot2

@@ -74,13 +74,14 @@ connect_to_dw <- function(config_file) {
 #' and unless something is wrong, all projects in `start` should be in `end` (there should be no "un-release" phenomenon).
 #' For each snapshot, we filter for "available" files, which are either public or controlled access, and calculate a simple delta.
 #' @inheritParams query_data_by_funding_agency
-#' @param
+#' @param start_id_file Text files of all study ids with released data at start of report period.
+#' @param end_id_file Text files of all study ids with released data at end of report period.
 query_file_snapshot <- function(con,
-                          config_file = NULL,
-                          start_date,
-                          end_date,
-                          start_id_file,
-                          end_id_file) {
+                                config_file = NULL,
+                                start_date,
+                                end_date,
+                                start_id_file,
+                                end_id_file) {
 
   if(!exists("con")) con <- connect_to_dw(config_file)
 
