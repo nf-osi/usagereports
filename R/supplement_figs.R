@@ -3,6 +3,7 @@
 #' @inheritParams plot_sankey_status
 plot_gauge_3x <- function(data, palette) {
 
+  group <- percentage <- label <- variable <- NULL
   p <- ggplot(data, aes(fill = group, ymax = percentage, ymin = 0, xmax = 2, xmin = 1)) +
     geom_rect(aes(ymax=1, ymin=0, xmax=2, xmin=1), fill = palette$gray1 ) +
     geom_rect() +

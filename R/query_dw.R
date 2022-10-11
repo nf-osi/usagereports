@@ -29,7 +29,7 @@ query_data_by_funding_agency <- function(con = NULL,
   }
   FA <- FA$asDataFrame()
   project_ids <- FA$studyId
-  write.csv(FA, glue::glue("{FA}.csv"))
+  utils::write.csv(FA, glue::glue("{FA}.csv"))
 
   for(query_type in query_types) {
     dir.create(query_type)
@@ -37,7 +37,7 @@ query_data_by_funding_agency <- function(con = NULL,
     for (pid in project_ids) {
       try({
         report <- synapseusagereports::report_data_query(con, pid, query_type, start_date, end_date)
-        write.csv(report, glue::glue("{query_type}/{pid}.csv"), row.names = F)
+        utils::write.csv(report, glue::glue("{query_type}/{pid}.csv"), row.names = F)
       })
     }
 

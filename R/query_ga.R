@@ -10,6 +10,7 @@
 query_ga <- function(projects,
                      date_range) {
 
+  project <- pagePath <- NULL
   ga_id <- 57135211 # Use "Synapse" view id
   project_filters <- lapply(projects, function(x) dim_filter("pagePath", "BEGINS_WITH", paste0("/#!Synapse:", x)))
   filter_clause <- filter_clause_ga4(project_filters, "OR")

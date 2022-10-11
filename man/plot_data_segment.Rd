@@ -17,6 +17,12 @@ plot_data_segment(
 
 \item{adata}{Assay type annotation data.}
 
+\item{assay_palette}{Color palette for assays,
+which might need more customization since assay annotations can be somewhat project-specific.}
+
+\item{resource_palette}{Color palette for resources -- default uses \code{resource_type_palette()},
+but provide a custom palette if annotations are project-specific.}
+
 \item{donut}{Display as donut/sunburst-like chart.}
 }
 \description{

@@ -15,16 +15,18 @@ query_file_snapshot <- function(con,
                                 end_date,
                                 start_id_file,
                                 end_id_file) {
-  
+
+  PROJECT_ID <- NULL
+
   if(!exists("con")) con <- connect_to_dw(config_file)
-  
+
   start_ids <- as.numeric(gsub("syn", "", readLines(start_id_file)))
   end_ids <- as.numeric(gsub("syn", "", readLines(end_id_file)))
-  
+
   build_query <- function(ids, index_date, add_filter = "AND (IS_PUBLIC = 1 OR IS_CONTROLLED = 1)") {
-    
+
     ids_list <- glue::glue_collapse(ids, sep = ",")
-    
+
     # Construct timestamp ranges
     start_ts <- as.numeric(as.POSIXct(lubridate::ymd(index_date))) * 1000
     end_ts <- as.numeric(as.POSIXct(lubridate::`%m+%`(lubridate::ymd(index_date), months(1)))) * 1000
@@ -34,7 +36,7 @@ query_file_snapshot <- function(con,
                         WHERE TIMESTAMP > {start_ts} AND TIMESTAMP < {end_ts} AND NODE_TYPE = "file" AND PROJECT_ID IN ({ids_list}) {add_filter} GROUP BY ID') #
     return(query)
   }
-  
+
   options(scipen = 999)
   start_query <- build_query(start_ids, start_date)
   message(start_query)
@@ -42,15 +44,16 @@ query_file_snapshot <- function(con,
   start_data <- as.data.table(start_data)
   start_avail <- start_data[, .N, by = PROJECT_ID]
   fwrite(start_avail, "start_available_files.csv")
-  
+
   end_query <-  build_query(end_ids, end_date)
   message(end_query)
   end_data <- DBI::dbGetQuery(con, end_query)
   end_data <- as.data.table(end_data)
   end_avail <- end_data[, .N, by = PROJECT_ID]
+
   fwrite(end_avail, "end_available_files.csv")
-  
-  return(result)
+
+  return(end_avail)
 }
 
 #' Query data status snapshots
@@ -71,7 +74,7 @@ query_file_snapshot <- function(con,
 query_data_status_snapshots <- function(vRange,
                                         fundingAgency = "NTAP",
                                         ref = "syn16787123") {
-  
+
   versions <- vRange[1]:vRange[2]
   vlist <- c()
   for(v in versions) {
@@ -86,18 +89,18 @@ query_data_status_snapshots <- function(vRange,
     res <- res$asDataFrame()
     records <- append(records, list(res))
   }
-  
+
   # Rename dataStatus using the snapshot date and merge into table
   for(i in seq_along(records)) {
     records[[i]] <- as.data.table(records[[i]])
     records[[i]] <- setnames(records[[i]], old = "dataStatus", new = vlist[i])
   }
   data_status <- Reduce(function(x, y) merge(x, y, by = "studyId", all = TRUE), records)
-  
+
   # Clean up data_status -- project can be removed from the funder list so changes,
   # e.g. NTAP says this is not an NTAP project but a CTF project
   data_status <- data_status[!is.na(get(vdate)), ]
-  
+
   # Fill in NA as "Pre-Synapse"
   for(col in names(data_status)[-1]) {
     data_status[[col]] <- fifelse(is.na(data_status[[col]]), "Pre-Synapse", data_status[[col]])
@@ -119,7 +122,7 @@ query_data_status_snapshots <- function(vRange,
 query_annotation <- function(file_ids,
                              fileview = "syn16858331",
                              attributes = c("resourceType", "assay", "dataType")) {
-  
+
   if(is.null(fileview)) {
     meta <- list()
     for(i in file_ids) {

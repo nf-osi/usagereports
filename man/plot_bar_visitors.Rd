@@ -12,5 +12,5 @@ plot_bar_visitors(data, pictogram = FALSE)
 \item{pictogram}{Does additional fun stuff with user pictograms, defaults to \code{FALSE}.}
 }
 \description{
-Plot unique visitors by project, meant to complement \link{`plot_dot_pageviews`}.
+Plot unique visitors by project, meant to complement \code{plot_dot_pageviews}.
 }

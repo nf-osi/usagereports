@@ -13,5 +13,5 @@ plot_scatter_pageviews_visitors(data, cutoff = 10)
 }
 \description{
 This is an alternative that presents pagesviews and visitors together instead of
-separately in \link{`plot_dot_pageviews`} and \link{`plot_bar_visitors`}.
+separately in \code{plot_dot_pageviews} and \code{plot_bar_visitors}.
 }

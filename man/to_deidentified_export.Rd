@@ -20,7 +20,11 @@ This is expected to be encrypted.}
 }
 \description{
 This processes the data warehouse outputs so that data is deidentified and can be stored
-in a private Synapse project. All downstream wranlign rely on this intermediate.
-Because of the limits on query intervals, it may be hard to get this data for re-analysis otherwise.
-Note that any Sage users use negative integers and have to be hard-coded before using this function.
+in a private Synapse project. All downstream wrangling/plotting rely on this intermediate.
+Storing this data is important because of the limits on availability (i.e. data only available for six months prior),
+so make sure to store data if there's any chance of later additional analysis or comparison later.
+}
+\details{
+For the recoding itself, DCC Sage users use negative integers and have to be hard-coded before using this function;
+this allows easy filtering of DCC users later on with simple \code{userId > 0} clause.
 }

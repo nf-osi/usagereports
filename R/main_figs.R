@@ -7,6 +7,8 @@
 #' @export
 #' @import ggplot2
 plot_sankey_status <- function(data, palette = data_status_palette) {
+
+  x <- next_x <- node <- next_node <- NULL
   p <- ggplot(data, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
     ggsankey::geom_sankey(flow.alpha = .4,
                 node.color = "gray30") +
@@ -26,6 +28,8 @@ plot_sankey_status <- function(data, palette = data_status_palette) {
 #' @inheritParams plot_sankey_status
 #' @export
 plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
+
+  Month <- Files <- NULL
   p <- ggplot(data, aes(x = Month, y = Files, fill = Month)) +
     geom_col() +
     scale_fill_manual(values = palette) +
@@ -51,6 +55,7 @@ plot_data_segment <- function(rdata,
                               resource_palette = resource_type_palette(),
                               donut = FALSE) {
 
+  proportion <- assay <- resourceType <- type <- NULL
   p <- ggplot() +
     geom_bar(data = rdata, aes(x = type, y = proportion, fill = resourceType),
              stat = "identity", position = "stack", color = "white") +
@@ -93,9 +98,11 @@ plot_data_segment <- function(rdata,
 #' @import ggplot2
 plot_lollipop_download_by_project <- function(data, palette) {
   # Horizontal
-  p <- ggplot(data, aes(x = reorder(project, downloads), y = downloads)) +
-      geom_segment(aes(x = reorder(project, downloads),
-                       xend = reorder(project, downloads),
+
+  project <- downloads <- NULL
+  p <- ggplot(data, aes(x = stats::reorder(project, downloads), y = downloads)) +
+      geom_segment(aes(x = stats::reorder(project, downloads),
+                       xend = stats::reorder(project, downloads),
                        y = 0,
                        yend = downloads),
                    color = palette$secondary) +
@@ -145,7 +152,9 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
 #'
 #' @inheritParams plot_sankey_status
 plot_col_pageview_ <- function(data) {
-  ggplot(data, aes(x = reorder(project, sum_pageviews), y = sum_pageviews, fill = data_released)) +
+
+  project <- sum_pageviews <- data_released <- NULL
+  ggplot(data, aes(x = stats::reorder(project, sum_pageviews), y = sum_pageviews, fill = data_released)) +
     geom_col() +
     facet_wrap(~ data_released, scales = "free_x") +
     scale_fill_manual(values = c("#af316c", "#376b8b")) +
@@ -158,6 +167,8 @@ plot_col_pageview_ <- function(data) {
 #' @inheritParams plot_sankey_status
 #' @export
 plot_dot_pageviews <- function(data) {
+
+  status <- sum_pageviews <- NULL
   # Recode data_released
   data$status <- ifelse(data$data_released, "Released data", "No released data")
   p <- ggplot(data, aes(x = status, y = sum_pageviews, fill = status)) +
@@ -180,6 +191,7 @@ plot_dot_pageviews <- function(data) {
 #' @export
 plot_bar_visitors <- function(data, pictogram = FALSE) {
 
+  x <- project <- max_users <- NULL
   p <- ggplot() +
     geom_bar(data = data, aes(x = max_users, y = factor(project)), stat = "identity", fill = default_palette()$primary) +
     theme_classic() +
@@ -211,6 +223,7 @@ plot_bar_visitors <- function(data, pictogram = FALSE) {
 #' @export
 plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
 
+  project <- max_users <- data_release_group <- sum_pageviews <- NULL
   p <- ggplot(data, aes(x = max_users, y = sum_pageviews, size = max_users, color = data_release_group, label = project)) +
     geom_point() +
     geom_text(data = subset(data, max_users > cutoff),  hjust = "right", vjust = "bottom", nudge_x = -0.6) +
@@ -236,7 +249,8 @@ plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
 #' @import igraph
 #' @export
 plot_bipartite <- function(data) {
-  g <- graph.data.frame(user_project, directed = TRUE)
+
+  g <- graph.data.frame(data, directed = TRUE)
   V(g)$type <- igraph::bipartite.mapping(g)$type
   V(g)$color <- ifelse(V(g)$type,  "#6fbeb8",  "#af316c")
   V(g)$label.color <-  ifelse(V(g)$type, "black", "white")

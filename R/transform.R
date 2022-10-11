@@ -1,14 +1,18 @@
 #' Transform to deidentified data
 #'
 #' This processes the data warehouse outputs so that data is deidentified and can be stored
-#' in a private Synapse project. All downstream wranlign rely on this intermediate.
-#' Because of the limits on query intervals, it may be hard to get this data for re-analysis otherwise.
-#' Note that any Sage users use negative integers and have to be hard-coded before using this function.
+#' in a private Synapse project. All downstream wrangling/plotting rely on this intermediate.
+#' Storing this data is important because of the limits on availability (i.e. data only available for six months prior),
+#' so make sure to store data if there's any chance of later additional analysis or comparison later.
+#'
+#' For the recoding itself, DCC Sage users use negative integers and have to be hard-coded before using this function;
+#' this allows easy filtering of DCC users later on with simple `userId > 0` clause.
 #'
 #' @param data_dir Output files from data warehouse query that contains real synapse user ids.
 #' @param code_file A csv mapping the random ids (`code` column) to real synapse user ids (`userId` column).
 #' This is expected to be encrypted.
 #' @param key_rds Key file for decrypting `code_file`.
+#' @import data.table
 #' @export
 to_deidentified_export <- function(data_dir,
                                    code_file = "codes.csv",
@@ -25,7 +29,7 @@ to_deidentified_export <- function(data_dir,
 
   key <- readRDS(key_rds)
   cyphr_key <- cyphr::key_sodium(key)
-  lookup <- cyphr::decrypt(read.csv(code_file), key = cyphr_key)
+  lookup <- cyphr::decrypt(utils::read.csv(code_file), key = cyphr_key)
   # Identify new vs. seen users in current data
   seen_users <- lookup$userId
   seen_users_codes <- lookup$code
@@ -37,7 +41,7 @@ to_deidentified_export <- function(data_dir,
     new_users_codes <- generate_code(new_users, exclude = seen_users_codes)
     new_rows <- data.frame(userId = new_users, code = new_users_codes)
     lookup <- rbind(lookup, new_rows)
-    cyphr::encrypt(write.csv(lookup, file = code_file, row.names = F), key = cyphr_key)
+    cyphr::encrypt(utils::write.csv(lookup, file = code_file, row.names = F), key = cyphr_key)
     message("New codes saved to encrypted file ", code_file)
   }
 
