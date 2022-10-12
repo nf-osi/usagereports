@@ -12,6 +12,7 @@
 #' @param data_status Character vector values for data status, defaults to all NF status values.
 #' @param table Reference studies table or whichever table that has information on studies and funding agency.
 #' @param save Whether to save a copy of study records to working directory.
+#' @param disconnect Whether to disconnect after query. Default `TRUE`
 #' @export
 query_data_by_funding_agency <- function(con = NULL,
                                          config_file = NULL,
@@ -20,7 +21,8 @@ query_data_by_funding_agency <- function(con = NULL,
                                          fundingAgency = "NTAP",
                                          data_status = c("Available", "Partially Available", "Under Embargo", "None"),
                                          table = "syn16787123",
-                                         save = TRUE) {
+                                         save = TRUE,
+                                         disconnect = TRUE) {
 
   if(is.null("con")) con <- connect_to_dw(config_file)
 
@@ -36,8 +38,9 @@ query_data_by_funding_agency <- function(con = NULL,
         utils::write.csv(report, glue::glue("{query_type}/{pid}.csv"), row.names = F)
       })
     }
-
   }
+  message(glue::glue("Finished querying data at {Sys.time()}"))
+  if(disconnect) DBI::dbDisconnect(con)
 }
 
 #' Helper for looking up studies
