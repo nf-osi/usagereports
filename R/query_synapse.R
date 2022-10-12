@@ -119,6 +119,7 @@ query_data_status_snapshots <- function(vRange,
 #' which is not guaranteed with a fileview.
 #' @param attributes Vector of relevant metadata attributes for breakdown, which may vary for the portal.
 #' Defaults to NF core attributes.
+#' @export
 query_annotation <- function(file_ids,
                              fileview = "syn16858331",
                              attributes = c("resourceType", "assay", "dataType")) {
