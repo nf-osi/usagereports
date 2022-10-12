@@ -10,7 +10,10 @@ query_data_by_funding_agency(
   start_date,
   end_date,
   fundingAgency = "NTAP",
-  all = TRUE
+  data_status = c("Available", "Partially Available", "Under Embargo", "None"),
+  table = "syn16787123",
+  save = TRUE,
+  disconnect = TRUE
 )
 }
 \arguments{
@@ -24,7 +27,13 @@ query_data_by_funding_agency(
 
 \item{fundingAgency}{An NF funding agency to query for.}
 
-\item{all}{Download for all projects associated with \code{fundingAgency}.}
+\item{data_status}{Character vector values for data status, defaults to all NF status values.}
+
+\item{table}{Reference studies table or whichever table that has information on studies and funding agency.}
+
+\item{save}{Whether to save a copy of study records to working directory.}
+
+\item{disconnect}{Whether to disconnect after query. Default \code{TRUE}}
 }
 \description{
 Requires devtools::install_github("Sage-Bionetworks/synapseusagereports")
