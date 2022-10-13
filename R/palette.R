@@ -46,6 +46,9 @@ data_status_palette <- function() {
   return(p)
 }
 
+#' Default palette for visualizing resource type
+#'
+#' @export
 resource_type_palette <- function() {
-  c(result = default_palette()$purple1, report = default_palette()$gray1, experimentalData = default_palette()$primary)
+  c(experimentalData = default_palette()$primary, `non-experimentalData` = default_palette()$gray1)
 }
