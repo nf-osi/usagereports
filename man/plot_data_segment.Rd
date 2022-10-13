@@ -2,7 +2,7 @@
 % Please edit documentation in R/main_figs.R
 \name{plot_data_segment}
 \alias{plot_data_segment}
-\title{Bar plot of downloads by data type}
+\title{Bar plot of downloads by data attributes}
 \usage{
 plot_data_segment(
   rdata,
@@ -26,5 +26,6 @@ but provide a custom palette if annotations are project-specific.}
 \item{donut}{Display as donut/sunburst-like chart.}
 }
 \description{
-Bar plot of downloads by data type
+This expects summary breakdown for core annotation attributes, e.g. a table with cols
+\code{resourceType}, \code{proportion} and a table with cols \code{assay}, \code{proportion}.
 }
