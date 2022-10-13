@@ -37,7 +37,10 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
   return(p)
 }
 
-#' Bar plot of downloads by data type
+#' Bar plot of downloads by data attributes
+#'
+#' This expects summary breakdown for core annotation attributes, e.g. a table with cols
+#' `resourceType`, `proportion` and a table with cols `assay`, `proportion`.
 #'
 #' @inheritParams plot_sankey_status
 #' @param rdata Resource type annotation data.
@@ -56,6 +59,8 @@ plot_data_segment <- function(rdata,
                               donut = FALSE) {
 
   proportion <- assay <- resourceType <- type <- NULL
+  adata$type <- "assay"
+  rdata$type <- "resourceType"
   p <- ggplot() +
     geom_bar(data = rdata, aes(x = type, y = proportion, fill = resourceType),
              stat = "identity", position = "stack", color = "white") +
