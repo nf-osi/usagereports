@@ -22,6 +22,7 @@ Imports:
     googleAnalyticsR,
     htmltools,
     igraph,
+    nfportalutils,
     lubridate,
     RMySQL,
     stats,
