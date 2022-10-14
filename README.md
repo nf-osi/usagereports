@@ -1,4 +1,4 @@
-# usage-reports
+# usagereports
 
 This contains scripts and an Rmarkdown template to generate data usage reports for a funder.
 **No real data** lives here. 
@@ -13,8 +13,10 @@ The collection of functions in `R` are:
 ## Diagram
 
 Overall, the functions can be put together in the manner represented below to generate the desired figures.
-Figures are approximately numbered by the order in which they appear. 
-(This will shift slightly as the report format is finalized.)
+Figures are approximately numbered by the order in which they appear in the "suggested" report format.
+However, the package should make it easy to just use for 1-2 figures or mix and match for another report format.
+
+**Please contribute back if you have additional or alternative figures that would be useful!**
 
 ```mermaid
 flowchart TD

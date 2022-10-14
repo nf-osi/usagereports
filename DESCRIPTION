@@ -1,6 +1,6 @@
 Package: usagereports
 Title: Produce Nice Usage Reports for Funders
-Version: 0.0.0.9200
+Version: 0.0.0.9300
 Authors@R: 
     person("Anh Nguyet", "Vu", , "anh.nguyet.vu@sagebase.org", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
