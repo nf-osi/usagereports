@@ -1,21 +1,20 @@
 #' Query wrapper to get data warehouse data
 #'
-#' Requires devtools::install_github("Sage-Bionetworks/synapseusagereports")
-#' This is a wrapper building on synapseusagereports to download NF-relevant data,
-#' which saves data for each project as a separate .csv within folders organized by report type.
+#' Requires `devtools::install_github("Sage-Bionetworks/synapseusagereports")`.
+#' This is a wrapper building on queries refined in synapseusagereports to download NF-relevant data;
+#' for details, see [code](https://github.com/Sage-Bionetworks/synapseusagereports/blob/master/R/lib.R#L13).
+#' Data is saved for each project as a separate `.csv` within folders organized by report type.
 #'
-#' @param con Connection object. If not given, `config_file` should be given.
-#' @param config_file YAML config file. See `synapseusagereports` package docs for example config file.
+#' @param con Connection object; use `connect_to_dw` to connect.
 #' @param start_date The start data of the report period -- should be first day of some month.
 #' @param end_date End date of report period, should be last day of the month six months from `start_date`.
 #' @param fundingAgency An NF funding agency to query for.
 #' @param data_status Character vector values for data status, defaults to all NF status values.
 #' @param table Reference studies table or whichever table that has information on studies and funding agency.
 #' @param save Whether to save a copy of study records to working directory.
-#' @param disconnect Whether to disconnect after query. Default `TRUE`
+#' @param disconnect Whether to disconnect after query. Default `TRUE`.
 #' @export
 query_data_by_funding_agency <- function(con = NULL,
-                                         config_file = NULL,
                                          start_date,
                                          end_date,
                                          fundingAgency = "NTAP",
@@ -23,8 +22,6 @@ query_data_by_funding_agency <- function(con = NULL,
                                          table = "syn16787123",
                                          save = TRUE,
                                          disconnect = TRUE) {
-
-  if(is.null("con")) con <- connect_to_dw(config_file)
 
   query_types <- c("filedownloadrecord", "download")
   project_ids <- query_study_ids(fundingAgency, data_status, table, save)
@@ -87,4 +84,5 @@ connect_to_dw <- function(config_file) {
   cat(DBI::dbListTables(con), sep = "\n")
   return(con)
 }
+
 
