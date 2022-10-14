@@ -6,23 +6,28 @@
 #' Data is saved for each project as a separate `.csv` within folders organized by report type.
 #'
 #' @param con Connection object; use `connect_to_dw` to connect.
-#' @param start_date The start data of the report period -- should be first day of some month.
-#' @param end_date End date of report period, should be last day of the month six months from `start_date`.
+#' @param start_date Start date of the report range in YYYY-MM-DD format -- should be first day of some month, e.g. "2022-03-01".
+#' @param end_date End date of report range, defaults to six months from `start_date`, e.g., "2022-09-01",
+#' but pass in manually if using a different report interval (though can't exceed six months)
 #' @param fundingAgency An NF funding agency to query for.
 #' @param data_status Character vector values for data status, defaults to all NF status values.
 #' @param table Reference studies table or whichever table that has information on studies and funding agency.
 #' @param save Whether to save a copy of study records to working directory.
 #' @param disconnect Whether to disconnect after query. Default `TRUE`.
 #' @export
-query_data_by_funding_agency <- function(con = NULL,
+query_data_by_funding_agency <- function(con,
                                          start_date,
-                                         end_date,
+                                         end_date = NULL,
                                          fundingAgency = "NTAP",
                                          data_status = c("Available", "Partially Available", "Under Embargo", "None"),
                                          table = "syn16787123",
                                          save = TRUE,
                                          disconnect = TRUE) {
 
+  if(is.null(end_date)) {
+    end_date <- lubridate::ymd(start_date) %m+% months(6)
+    message(glue::glue("Defaulting the end date to {end_date}!"))
+  }
   query_types <- c("filedownloadrecord", "download")
   project_ids <- query_study_ids(fundingAgency, data_status, table, save)
   for(query_type in query_types) {
