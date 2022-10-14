@@ -2,7 +2,7 @@
 % Please edit documentation in R/query_synapse.R
 \name{query_data_status_snapshots}
 \alias{query_data_status_snapshots}
-\title{Query data status snapshots}
+\title{Query internal data status snapshots}
 \usage{
 query_data_status_snapshots(
   vRange,
@@ -13,19 +13,32 @@ query_data_status_snapshots(
 \arguments{
 \item{vRange}{Start and end of versions to look at, e.g. version #1 to version #10.}
 
-\item{fundingAgency}{An NF funding agency to query for.}
+\item{fundingAgency}{Funding agency.}
 
 \item{ref}{Synapse table to use for query.}
 }
 \description{
-There are two ways to get the history of data status changes for studies:
+This gets data status changes on a project tracking level.
+See \code{query_file_snapshot} for a related function that tries to look at permissions on a file level,
+though not really changes over time.
+There are several ways to get the history of data status changes for studies:
 \enumerate{
 \item Download the weekly snapshots of the portal study table.
-\item Look up the permissions history of the \verb{Raw Data} folder (this is not possible).
-Both are overly complicated workarounds because data status changes are not recorded
-with dates in an official manner. Because the second is not possible anyway,
-this implements the first to create a data object representing transition states
-for the specific funder (default: NTAP) projects
-Once there are better data/methods for data status changes, this can be deprecated.
+\item Get the settings of different folders over time, maybe "Raw Data" as the primary folder.
+This does the first, and the second can be done to see the actual correspondence at a later point,
+e.g. if data status was changed to "Available" in our tracking, the "Raw Data" \code{IS_PUBLIC} flag
+should change to TRUE around the same time, right? However, this gets complicated with partial data releases
+where there's a whole bunch of other folders to consider...
 }
+}
+\details{
+In any case, the project data status is represented as transition states, though for downstream summary
+we don't show all time points, just "key" points where most of the changes actually happen,
+because changes often happen in batch with many projects going from one state to another within the same month.
+Transitions should be one-way, e.g. see \code{check_transition}, but it's possible to have weird stuff going on,
+such as "Available" and then somehow moving back to "Under Embargo".
+This is like a "revert release" that can mean either a data entry error,
+or we released data that shouldn't have been released and had to make a correction.
+
+Once there are better data/methods for data status changes, this can be deprecated.
 }

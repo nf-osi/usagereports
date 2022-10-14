@@ -69,8 +69,8 @@ query_study_ids <- function(fundingAgency,
 
 #' Helper for establishing connection
 #'
-#' @inheritParams query_data_by_funding_agency
-#'
+#' @param config_file YAML config storing db connection creds,
+#' see [example](https://github.com/Sage-Bionetworks/synapseusagereports/blob/master/example-db-config.yml).
 #' @return Connection object.
 #' @export
 connect_to_dw <- function(config_file) {
@@ -90,4 +90,37 @@ connect_to_dw <- function(config_file) {
   return(con)
 }
 
+#' Query file snapshot for settings
+#'
+#' The intent is to give a general sense of what files are actually visible and
+#' how easy they are to access (based on restrictions in place, which could of course slow down downloads/usage).
+#' Implementation uses `NODE_SNAPSHOT`, which has snapshots files when they are created/modified.
+#' This table is used to check the public/controlled/restricted flags:
+#' - `IS_PUBLIC` : Can public see entity?
+#' - `IS_CONTROLLED` : Is entity under Tier 3 access?
+#' - `IS_RESTRICTED` : Is entity under Tier 2 access?
+#'
+#' More definitions...
+#' - `Tier 1` : User agrees to a second EULA specific to certain data layers.
+#' - `Tier 2` : (Tier 1) + User agrees to a second EULA specific to certain data layers.
+#' - `Tier 3` : (Tier 1) + (Tier 2) + User access must be requested/approved through ACT.
+#'
+#' @inheritParams query_data_by_funding_agency
+#' @param project_ids Vector of project ids without the "syn" prefix.
+#' @param end_date Latest date to consider for file snapshots, corresponding to the report end date.
+#' @export
+query_file_snapshot <- function(con, end_date, project_ids) {
 
+  project_ids <- glue::glue_collapse(project_ids, sep = ",")
+  # Get the access settings on the latest snapshot of a file within the report period
+  # Avoid counting files that become public *after* report period, so consider only up to {end_date}
+  query <- glue::glue(
+  'SELECT ID,DATE_FORMAT(from_unixtime(MAX(TIMESTAMP) / 1000), "%Y-%m-%d") AS DATE,PARENT_ID,IS_PUBLIC,IS_CONTROLLED,IS_RESTRICTED
+  FROM NODE_SNAPSHOT
+  WHERE NODE_TYPE = "file" AND TIMESTAMP < unix_timestamp("{end_date}")*1000 AND PROJECT_ID IN ({project_ids})
+  GROUP BY ID')
+  message(query)
+  result <- dbGetQuery(con, query)
+  result <- as.data.table(result)
+  return(result)
+}

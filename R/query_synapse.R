@@ -1,75 +1,29 @@
-
-#' Query available files within the first and last month of report period
+#' Query internal data status snapshots
 #'
-#' The first file snapshot scope (first month of report period) includes unique files for the projects listed in `start_id_file`.
-#' The second file snapshot scope (last month of report period) includes unique files for projects listed in `end_id_file`.
-#' Usually, there are more projects in the `end_id_file` because of new project releases during the report period;
-#' and unless something is wrong, all projects in `start` should be in `end` (there should be no "un-release" phenomenon).
-#' For each snapshot, we filter for "available" files, which are either public or controlled access, and calculate a simple delta.
-#' @inheritParams query_data_by_funding_agency
-#' @param start_id_file Text files of all study ids with released data at start of report period.
-#' @param end_id_file Text files of all study ids with released data at end of report period.
-query_file_snapshot <- function(con,
-                                config_file = NULL,
-                                start_date,
-                                end_date,
-                                start_id_file,
-                                end_id_file) {
-
-  PROJECT_ID <- NULL
-
-  if(!exists("con")) con <- connect_to_dw(config_file)
-
-  start_ids <- as.numeric(gsub("syn", "", readLines(start_id_file)))
-  end_ids <- as.numeric(gsub("syn", "", readLines(end_id_file)))
-
-  build_query <- function(ids, index_date, add_filter = "AND (IS_PUBLIC = 1 OR IS_CONTROLLED = 1)") {
-
-    ids_list <- glue::glue_collapse(ids, sep = ",")
-
-    # Construct timestamp ranges
-    start_ts <- as.numeric(as.POSIXct(lubridate::ymd(index_date))) * 1000
-    end_ts <- as.numeric(as.POSIXct(lubridate::`%m+%`(lubridate::ymd(index_date), months(1)))) * 1000
-    # DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE
-    query <- glue::glue('SELECT ID,DATE_FORMAT(from_unixtime(TIMESTAMP / 1000), "%Y-%m-%d") AS DATE,PROJECT_ID,FILE_HANDLE_ID,NAME,IS_PUBLIC,IS_CONTROLLED,IS_RESTRICTED
-                        FROM NODE_SNAPSHOT
-                        WHERE TIMESTAMP > {start_ts} AND TIMESTAMP < {end_ts} AND NODE_TYPE = "file" AND PROJECT_ID IN ({ids_list}) {add_filter} GROUP BY ID') #
-    return(query)
-  }
-
-  options(scipen = 999)
-  start_query <- build_query(start_ids, start_date)
-  message(start_query)
-  start_data <- DBI::dbGetQuery(con, start_query)
-  start_data <- as.data.table(start_data)
-  start_avail <- start_data[, .N, by = PROJECT_ID]
-  fwrite(start_avail, "start_available_files.csv")
-
-  end_query <-  build_query(end_ids, end_date)
-  message(end_query)
-  end_data <- DBI::dbGetQuery(con, end_query)
-  end_data <- as.data.table(end_data)
-  end_avail <- end_data[, .N, by = PROJECT_ID]
-
-  fwrite(end_avail, "end_available_files.csv")
-
-  return(end_avail)
-}
-
-#' Query data status snapshots
-#'
-#' There are two ways to get the history of data status changes for studies:
+#' This gets data status changes on a project tracking level.
+#' See `query_file_snapshot` for a related function that tries to look at permissions on a file level,
+#' though not really changes over time.
+#' There are several ways to get the history of data status changes for studies:
 #' 1) Download the weekly snapshots of the portal study table.
-#' 2) Look up the permissions history of the `Raw Data` folder (this is not possible).
-#' Both are overly complicated workarounds because data status changes are not recorded
-#' with dates in an official manner. Because the second is not possible anyway,
-#' this implements the first to create a data object representing transition states
-#' for the specific funder (default: NTAP) projects
+#' 2) Get the settings of different folders over time, maybe "Raw Data" as the primary folder.
+#' This does the first, and the second can be done to see the actual correspondence at a later point,
+#' e.g. if data status was changed to "Available" in our tracking, the "Raw Data" `IS_PUBLIC` flag
+#' should change to TRUE around the same time, right? However, this gets complicated with partial data releases
+#' where there's a whole bunch of other folders to consider...
+#'
+#' In any case, the project data status is represented as transition states, though for downstream summary
+#' we don't show all time points, just "key" points where most of the changes actually happen,
+#' because changes often happen in batch with many projects going from one state to another within the same month.
+#' Transitions should be one-way, e.g. see `check_transition`, but it's possible to have weird stuff going on,
+#' such as "Available" and then somehow moving back to "Under Embargo".
+#' This is like a "revert release" that can mean either a data entry error,
+#' or we released data that shouldn't have been released and had to make a correction.
+#'
 #' Once there are better data/methods for data status changes, this can be deprecated.
 #'
 #' @param vRange Start and end of versions to look at, e.g. version #1 to version #10.
+#' @param fundingAgency Funding agency.
 #' @param ref Synapse table to use for query.
-#' @inheritParams query_data_by_funding_agency
 #' @export
 query_data_status_snapshots <- function(vRange,
                                         fundingAgency = "NTAP",
@@ -97,7 +51,7 @@ query_data_status_snapshots <- function(vRange,
   }
   data_status <- Reduce(function(x, y) merge(x, y, by = "studyId", all = TRUE), records)
 
-  # Clean up data_status -- project can be removed from the funder list so changes,
+  # Clean up data_status -- project can be removed from the funder list due to changes,
   # e.g. NTAP says this is not an NTAP project but a CTF project
   data_status <- data_status[!is.na(get(vdate)), ]
 

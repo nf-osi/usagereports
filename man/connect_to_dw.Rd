@@ -7,7 +7,8 @@
 connect_to_dw(config_file)
 }
 \arguments{
-\item{config_file}{YAML config file. See \code{synapseusagereports} package docs for example config file.}
+\item{config_file}{YAML config storing db connection creds,
+see \href{https://github.com/Sage-Bionetworks/synapseusagereports/blob/master/example-db-config.yml}{example}.}
 }
 \value{
 Connection object.

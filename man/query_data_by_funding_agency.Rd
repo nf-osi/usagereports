@@ -5,10 +5,9 @@
 \title{Query wrapper to get data warehouse data}
 \usage{
 query_data_by_funding_agency(
-  con = NULL,
-  config_file = NULL,
+  con,
   start_date,
-  end_date,
+  end_date = NULL,
   fundingAgency = "NTAP",
   data_status = c("Available", "Partially Available", "Under Embargo", "None"),
   table = "syn16787123",
@@ -17,13 +16,12 @@ query_data_by_funding_agency(
 )
 }
 \arguments{
-\item{con}{Connection object. If not given, \code{config_file} should be given.}
+\item{con}{Connection object; use \code{connect_to_dw} to connect.}
 
-\item{config_file}{YAML config file. See \code{synapseusagereports} package docs for example config file.}
+\item{start_date}{Start date of the report range in YYYY-MM-DD format -- should be first day of some month, e.g. "2022-03-01".}
 
-\item{start_date}{The start data of the report period -- should be first day of some month.}
-
-\item{end_date}{End date of report period, should be last day of the month six months from \code{start_date}.}
+\item{end_date}{End date of report range, defaults to six months from \code{start_date}, e.g., "2022-09-01",
+but pass in manually if using a different report interval (though can't exceed six months)}
 
 \item{fundingAgency}{An NF funding agency to query for.}
 
@@ -33,10 +31,11 @@ query_data_by_funding_agency(
 
 \item{save}{Whether to save a copy of study records to working directory.}
 
-\item{disconnect}{Whether to disconnect after query. Default \code{TRUE}}
+\item{disconnect}{Whether to disconnect after query. Default \code{TRUE}.}
 }
 \description{
-Requires devtools::install_github("Sage-Bionetworks/synapseusagereports")
-This is a wrapper building on synapseusagereports to download NF-relevant data,
-which saves data for each project as a separate .csv within folders organized by report type.
+Requires \code{devtools::install_github("Sage-Bionetworks/synapseusagereports")}.
+This is a wrapper building on queries refined in synapseusagereports to download NF-relevant data;
+for details, see \href{https://github.com/Sage-Bionetworks/synapseusagereports/blob/master/R/lib.R#L13}{code}.
+Data is saved for each project as a separate \code{.csv} within folders organized by report type.
 }
