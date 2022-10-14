@@ -1,4 +1,4 @@
-#-- Graphs ---------------------------------------------------------------------#
+#-- Plots ---------------------------------------------------------------------#
 
 #' Sankey status transitions
 #'
@@ -95,7 +95,8 @@ plot_data_segment <- function(rdata,
 }
 
 
-#' Lollipop plot of downloads by project.
+#' Lollipop plot of downloads by project
+#'
 #' Expects a `data.frame` with `project` and `downloads`.
 #'
 #' @inheritParams plot_sankey_status
@@ -155,17 +156,28 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
 
 #' Bipartite network connecting users and projects
 #'
+#' User ids are supposed to be random numbers (e.g. 6, 19, 40) and not actual user ids,
+#' but to keep the display cleaner when there is potentially *a lot* of users, the ids are hidden by default.
+#' Also, having numbers can be confusing (apparent by questions like: "Does '19' mean the number of users?" -- no, that's just the id).
+#'
 #' @inheritParams plot_sankey_status
+#' @param hide_user_id Don't label user nodes with their ids. See details.
 #' @import igraph
 #' @export
-plot_bipartite <- function(data) {
+plot_bipartite <- function(data, hide_user_id = TRUE) {
 
+  project_node_color <- "#6fbeb8"
+  user_node_color <- "#af316c"
   g <- graph.data.frame(data, directed = TRUE)
   V(g)$type <- igraph::bipartite.mapping(g)$type
-  V(g)$color <- ifelse(V(g)$type,  "#6fbeb8",  "#af316c")
-  V(g)$label.color <-  ifelse(V(g)$type, "black", "white")
+  V(g)$color <- ifelse(V(g)$type,  project_node_color, user_node_color)
+  user_node_label <- if(hide_user_id) user_node_color else "white" # obfuscate by using same color as bg
+  V(g)$label.color <-  ifelse(V(g)$type, "black", user_node_label)
   V(g)$label.family <- "sans"
   V(g)$size <- ifelse(V(g)$type, 30,  20)
   plot(g, layout = layout_with_fr)
   # return(g)
 }
+
+
+
