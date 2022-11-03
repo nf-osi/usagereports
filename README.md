@@ -1,6 +1,8 @@
 # usagereports
 
-This contains scripts and an Rmarkdown template to generate data usage reports for a funder.
+This package contains scripts to pull data from various sources and generate a funder data usage report.
+For the warehouse data source, this mostly wraps queries from [Sage-Bionetworks/synapseusagereports](https://github.com/Sage-Bionetworks/synapseusagereports). 
+
 **No real data** lives here. 
 To propose a new plot figure, you *should* add a corresponding function to create example data so it's clear what the data looks like.
 
@@ -12,16 +14,16 @@ The collection of functions in `R` are:
 
 ## Diagram
 
-Overall, the functions can be put together in the manner represented below to generate the desired figures.
-Figures are approximately numbered by the order in which they appear in the "suggested" report format.
-However, the package should make it easy to just use for 1-2 figures or mix and match for another report format.
+Overall processing can be put together in the manner represented below for the general report structure.
+Figures are approximately numbered by the order in which they appear in this "suggested" report format.
+But one should be able to easily reuse only some of the figures/mix and match for another report format.
 
 **Please contribute back if you have additional or alternative figures that would be useful!**
 
 ```mermaid
 flowchart TD
     
-    classDef fig fill:orange,stroke:#333,stroke-width:3px;
+    classDef fig fill:red,stroke:#333,stroke-width:3px;
     class fig1,fig2,fig3,fig4,fig5,fig6,fig7,fig8,fig9,fig10 fig;
     
     dw[(db warehouse)] -- query_data_by_funding_agency --> files[[files]] 
