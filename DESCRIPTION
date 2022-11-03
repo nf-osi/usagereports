@@ -1,0 +1,32 @@
+Package: usagereports
+Title: Produce Nice Usage Reports for Funders
+Version: 0.0.0.9300
+Authors@R: 
+    person("Anh Nguyet", "Vu", , "anh.nguyet.vu@sagebase.org", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package is downstream of and builds upon the package Sage-Bionetworks/synapseusagereports. The goal is to have the work of creating funder reports be more reusable and to produce a product with a high-quality and consistent look and feel over at least the next 3 years of reporting deliverables. Package functions mostly wraps queries, massage data, and standardize plots that go into an Rmarkdown template. 
+License: AGPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Imports: 
+    cyphr,
+    data.table,
+    DBI,
+    dbplyr,
+    dplyr,
+    ggplot2,
+    ggnewscale,
+    ggsankey,
+    glue,
+    googleAnalyticsR,
+    htmltools,
+    igraph,
+    nfportalutils,
+    lubridate,
+    reticulate,
+    RMySQL,
+    stats,
+    synapseusagereports,
+    utils,
+    yaml

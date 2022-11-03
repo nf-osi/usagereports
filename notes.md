@@ -61,7 +61,7 @@ This matrix tries to summarize which questions will be pursued and included in t
 #### Per project, what is the total number of unique users who have downloaded data? ⭐⭐⭐ | 🟡
 - The concept of a "download" needs to be refined in the backend as it currently includes any time a pre-signed url is created (e.g. file previews, table downloads (maybe we want this?), actual downloads...)
 
-#### What is the total number of unique users who have downloaded data, only considering the "NF-OSI Processed Data"? ⭐⭐⭐ | 🟡
+#### What is the total number of unique users who have downloaded data? ⭐⭐⭐ | 🟡
 - Note: only relevant after the first data release.
 
 #### What is the data type breakdown of data being used? ⭐⭐⭐ | 🟢
