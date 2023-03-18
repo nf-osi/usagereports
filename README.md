@@ -52,4 +52,9 @@ flowchart TD
     
 ```
 
+## Installation
 
+This relies on two non-CRAN packages that should be installed via `devtools`:
+
+- `devtools::install_github("Sage-Bionetworks/synapseusagereports")`
+- `devtools::install_github("davidsjoberg/ggsankey")`
