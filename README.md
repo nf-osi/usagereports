@@ -59,3 +59,11 @@ This relies on two non-CRAN packages that should be installed via `devtools`:
 - `devtools::install_github("Sage-Bionetworks/synapseusagereports")`
 - `devtools::install_github("davidsjoberg/ggsankey")`
 
+Then: 
+`devtools::install_github("nf-osi/usagereports")`
+
+(Or for contributors) Clone this repo and install locally with:
+`devtools::install()`
+
+
+
