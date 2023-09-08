@@ -56,7 +56,6 @@ query_study_ids <- function(fundingAgency,
                             table,
                             save) {
 
-    nfportalutils::.check_login()
     data_status <- glue::glue_collapse(glue::single_quote(data_status), sep = ",")
     message(glue::glue("Getting a list of all {fundingAgency} projects with specified statuses..."))
     study_records <- .syn$tableQuery(glue::glue("SELECT studyId,dataStatus FROM {table} WHERE fundingAgency has ('{fundingAgency}') AND dataStatus in ({data_status})"))
