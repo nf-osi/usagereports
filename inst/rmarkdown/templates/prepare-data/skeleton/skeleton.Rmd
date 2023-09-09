@@ -1,0 +1,47 @@
+---
+title: "Prepare data (legacy datawarehouse)"
+author: "Your Name"
+date: ""
+output: output_format
+---
+
+```{r setup, include=FALSE}
+
+library(data.table)
+library(nfportalutils)
+library(googleAnalyticsR)
+library(usagereports) 
+
+syn_login()
+```
+
+## Query portal studies 
+
+This queries data from the warehouse snapshot database -- it currently takes a minimum of 4.5 hours for a funding agency such as NTAP. 
+To connect to your warehouse snapshot, create a `config.yml` to store the snapshot name (which will vary, check your build log) and creds that were specified during the build.
+Store this in the current working directory.
+This template has been set up in a new directory created to store the outputs. 
+Also make sure that you are on the Sage VPN in order to connect to your snapshot.
+
+### Connect
+```{r}
+
+con <- usagereports::connect_to_dw(config_file = "config.yml")
+
+```
+
+### Create directory
+
+
+```{r}
+dir.create("NTAP_2022-09-01_2023-01-01")
+setwd("NTAP_2022-09-01_2023-01-01")
+query_data_by_funding_agency(con = con, start_date = "2022-09-01", end_date = "2023-01-01", disconnect = FALSE)
+```
+
+```{r}
+dir.create("2023-01-01_2023-03-01")
+setwd("2023-01-01_2023-03-01")
+query_data_by_funding_agency(con = con, start_date = "2023-01-01", end_date = "2023-03-01", disconnect = FALSE)
+```
+
