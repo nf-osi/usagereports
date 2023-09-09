@@ -10,7 +10,7 @@ The collection of functions in `R` are:
 - `plot_*` : Generate plots that go into the report.
 - `simd_*` : Simulate example data for the corresponding plots.
 
-## Diagram
+## Workflow
 
 Overall, the functions can be put together in the manner represented below to generate the desired figures.
 Figures are approximately numbered by the order in which they appear in the "suggested" report format.
@@ -52,9 +52,25 @@ flowchart TD
     
 ```
 
+### Templates
+
+- Use a starter template for prepping data: `rmarkdown::draft(file = "Prep data (YYYY-MM)", template = "prep-data", package = "usagereports")`
+
 ## Installation
 
-This relies on two non-CRAN packages that should be installed via `devtools`:
+### OS dependencies installation
+
+SQL db or client:
+- deb: `libmysqlclient-dev` (Debian, Ubuntu, etc)
+- brew: `mysql` (OSX)
+
+This needs `libsodium` for encrypting/de-encrypting some data.
+- deb: `libsodium-dev` (Debian, Ubuntu, etc)
+- brew: `libsodium-dev` (OSX)
+
+### R dev package dependencies
+
+This relies on two non-CRAN packages that can be installed via `devtools`:
 
 - `devtools::install_github("Sage-Bionetworks/synapseusagereports")`
 - `devtools::install_github("davidsjoberg/ggsankey")`
