@@ -14,4 +14,4 @@ dw_config <- function(host = "",
       glue::glue("password: {password}")),
     con = "config.yml")
   message("Saved `config.yml`. If you are in a git repo, please add it to .gitignore.")
-} 
+}
