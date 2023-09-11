@@ -54,7 +54,7 @@ flowchart TD
 
 ### Templates
 
-- Use a starter template for prepping data: `rmarkdown::draft(file = "Prep data (YYYY-MM)", template = "prep-data", package = "usagereports")`
+- Use a starter template for prepping data: `rmarkdown::draft(file = "Data-prep-YYYY-MM", template = "prepare-data-legacy", package = "usagereports")`
 
 ## Installation
 
