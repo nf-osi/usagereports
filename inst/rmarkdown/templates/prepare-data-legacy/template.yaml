@@ -1,0 +1,5 @@
+name: Prepare data (legacy datawarehouse)
+description: >
+   Scaffold template for running queries for each data preparation cycle (~6 months with legacy datawarehouse).
+   This will also create a directory for the work.
+create_dir: TRUE
