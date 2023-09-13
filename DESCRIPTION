@@ -22,11 +22,11 @@ Imports:
     googleAnalyticsR,
     htmltools,
     igraph,
-    nfportalutils,
     lubridate,
     reticulate,
     RMySQL,
     stats,
+    synapser,
     synapseusagereports,
     utils,
     yaml
