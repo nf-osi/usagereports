@@ -32,15 +32,15 @@ query_data_status_snapshots <- function(vRange,
   versions <- vRange[1]:vRange[2]
   vlist <- c()
   for(v in versions) {
-    x <- .syn$get(ref, version = v)
+    x <- synapser::synGet(ref, version = v)
     vdate <- as.character(as.Date(x$properties$modifiedOn)) # Do not use 'createdOn'
     vlist <- c(vlist, vdate)
   }
   records <- list()
   for(v in versions) {
-    res <- .syn$tableQuery(glue::glue("SELECT studyId,dataStatus FROM {ref}.{v} WHERE fundingAgency has ('{fundingAgency}')"),
-                           includeRowIdAndRowVersion = F)
-    res <- res$asDataFrame()
+    res <- synapser::synTableQuery(glue::glue("SELECT studyId,dataStatus FROM {ref}.{v} WHERE fundingAgency has ('{fundingAgency}')"),
+                                   includeRowIdAndRowVersion = F)
+    res <- synapser::as.data.frame(res)
     records <- append(records, list(res))
   }
 
@@ -81,7 +81,7 @@ query_annotation <- function(file_ids,
   if(is.null(fileview)) {
     meta <- list()
     for(i in file_ids) {
-      dict <- .syn$get_annotations(i)
+      dict <- synapser::synGetAnnotations(i)
       metaset <- lapply(attributes, function(x) tryCatch(dict[[x]], error = function(e) NA_character_))
       meta[[paste0("syn", i)]] <- metaset
     }
@@ -90,8 +90,29 @@ query_annotation <- function(file_ids,
   } else {
     ids_list <- glue::glue_collapse(file_ids, sep = ",")
     attributes <- glue::glue_collapse(attributes, sep = ",")
-    meta <- .syn$tableQuery(glue::glue("SELECT id,{attributes} FROM {fileview} WHERE id in ({ids_list})"))
-    meta <- as.data.table(meta$asDataFrame())
+    meta <- synapser::synTableQuery(glue::glue("SELECT id,{attributes} FROM {fileview} WHERE id in ({ids_list})"))
+    meta <- as.data.table(synapser::as.data.frame(meta))
   }
   return(meta)
+}
+
+
+#' Check public download access
+#'
+#' This returns whether a benefactor id allows public download and view access to the public as
+#' `list(READ = bool, DOWNLOAD = bool)`.
+#'
+#' @param benefactor_id A benefactor id to check; usually a higher-level container, but files can be their own benefactor.
+#' @export
+check_public_access <- function(benefactor_id) {
+
+  public <- 273948 # hard-coded group "All Synapse users"
+
+  tryCatch({
+    acl_result <- synapser::synRestGET(glue::glue("https://repo-prod.prod.sagebase.org/repo/v1/entity/{benefactor_id}/acl"))$resourceAccess %>%
+      rbindlist(.)
+    }, error = function(e) stop(glue::glue("Error for {benefactor_id}: {e$message}")))
+
+  access <- setNames(as.list(c("READ", "DOWNLOAD") %in% acl_result[principalId == public, accessType]), c("READ", "DOWNLOAD"))
+  return(access)
 }
