@@ -1,29 +1,36 @@
-#' Convenience wrapper for Google Analytics
+# Reference resources:
+# - https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#dimensions
+# - https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics
+
+#' Query project stats with GA4
 #'
-#' Wrapper to query for pageviews and users.
+#' Convenience wrapper to query for selected project stats: pageviews and users.
+#' Result is a list of tables matching number of projects; each table breaks down the stats for the pages (wiki, files, etc.) of that project.
+#'
 #' Make sure already authenticated with `googleAnalyticsR::ga_auth()`.
 #'
-#' @param projects List of project syn ids, used for pagepath filters.
+#' @param projects Character vector of one or more project syn ids.
 #' @param date_range Start and end date.
+#' @param ga_property_id Google Analytics property id.
 #' @import googleAnalyticsR
 #' @export
-query_ga <- function(projects,
-                     date_range) {
+query_ga_project_stats <- function(projects,
+                                 date_range,
+                                 ga_property_id = 311611973) {
 
-  project <- pagePath <- NULL
-  ga_id <- 57135211 # Use "Synapse" view id
-  project_filters <- lapply(projects, function(x) dim_filter("pagePath", "BEGINS_WITH", paste0("/#!Synapse:", x)))
-  filter_clause <- filter_clause_ga4(project_filters, "OR")
+  project <- pagePath <- NULL # this is just to appease CMD check
 
-  pv <- google_analytics(ga_id,
-                         date_range = date_range,
-                         metrics = c("pageviews", "users"),
-                         dimensions = c("pagePath"),
-                         dim_filters = filter_clause)
+  pstats <- list()
+  for(p in projects) {
 
-  pv <- as.data.table(pv)
-  # Parse pagePath to project syn Ids
-  pv[, project := regmatches(pagePath, regexpr("syn[0-9]+", pagePath))]
+    project_filter <- ga_data_filter(pageTitle %contains% p)
 
-  return(pv)
+    pstats[[p]] <- ga_data(ga_property_id,
+                          date_range = date_range,
+                          metrics = c("screenPageViews", "totalUsers"),
+                          dimensions = c("pageTitle"),
+                          dim_filters = project_filter)
+  }
+
+  return(pstats)
 }
