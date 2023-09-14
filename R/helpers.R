@@ -2,6 +2,11 @@
 #' 
 #' Create a `config.yml` to store datawarehouse connection parameters if you don't already one.
 #' 
+#' @param host Host URI.
+#' @param port Numeric port; defaults to 3306.
+#' @param username Username.
+#' @param password Password.
+#' @export
 dw_config <- function(host = "",
                       port = 3306,
                       username = "",

@@ -40,7 +40,7 @@ to_deidentified_export <- function(data_dir,
     new_users_codes <- generate_code(new_users, exclude = seen_users_codes)
     new_rows <- data.frame(userId = new_users, code = new_users_codes)
     lookup <- rbind(lookup, new_rows)
-    encrypt_code_file(lookup, file = code_file, key_rds = key_rds)
+    encrypt_code_file(lookup, code_file = code_file, key_rds = key_rds)
     message("New codes saved to encrypted file ", code_file)
   }
 
@@ -64,19 +64,14 @@ generate_code <- function(x, exclude) {
 }
 
 
-#' Decrypt and read code file
+#' Encrypt and save code file
 #'
-#' @export
-read_code_file <- function(code_file = "codes.csv",
-                           key_rds = "usage_report_key.rds") {
-  key <- readRDS(key_rds)
-  cyphr_key <- cyphr::key_sodium(key)
-  codes <- cyphr::decrypt(utils::read.csv(code_file), key = cyphr_key)
-  codes
-}
-
-#' Encrypt and code file
-#'
+#' See also inverse helper `read_code_file`.
+#' 
+#' @param code_df A `data.frame` with cols `userId` and `code` to encrypt.
+#' @param code_file Name of file to encrypt to, should have `csv` extension.
+#' @param key_rds Encryption key.
+#' 
 #' @export
 encrypt_code_file <- function(code_df,
                               code_file = "codes.csv",
@@ -87,4 +82,20 @@ encrypt_code_file <- function(code_df,
   cyphr::encrypt(
     utils::write.csv(code_df, file = code_file, row.names = F),
     key = cyphr_key)
+}
+
+
+#' Decrypt and read code file
+#' 
+#' See also inverse helper `encrypt_code_file`.
+#' 
+#' @param code_file Name of file to read from, should have `csv` extension.
+#' @param key_rds Encryption key.
+#' @export
+read_code_file <- function(code_file = "codes.csv",
+                           key_rds = "usage_report_key.rds") {
+  key <- readRDS(key_rds)
+  cyphr_key <- cyphr::key_sodium(key)
+  codes <- cyphr::decrypt(utils::read.csv(code_file), key = cyphr_key)
+  codes
 }
