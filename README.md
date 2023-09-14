@@ -19,42 +19,60 @@ However, the package should make it easy to just use for 1-2 figures or mix and 
 **Please contribute back if you have additional or alternative figures that would be useful!**
 
 ```mermaid
+
 flowchart TD
     
-    classDef fig fill:orange,stroke:#333,stroke-width:3px;
+    classDef fig fill:orange,stroke:#333,stroke-width:0px;
     class fig1,fig2,fig3,fig4,fig5,fig6,fig7,fig8,fig9,fig10 fig;
+    style datawarehouse fill:#625191,stroke-width:0px
+    style synapse fill:#125e81,stroke-width:0px
+    style google fill:#e9b4ce,stroke-width:0px
+    style datawarehouse color:white
+    style synapse color:white
+
+
+    subgraph datawarehouse
+        dw[(db warehouse)] -- query_data_by_funding_agency --> files[[files]] 
+        dw -- query_file_snapshot --> file_summary_data(file_summary_data)
+        file_summary_data -- plot_bar_available_files --> fig2:::fig
+        files -- to_deidentified_export --> data(data) 
+        data -- plot_lollipop_download_by_project --> fig4:::fig
+        data -- plot_downloads_datetime --> fig5:::fig
+        data -- filter --> filtered_data(filtered_data)
+        filtered_data -- plot_lollipop_download_by_project --> fig6:::fig
+        filtered_data -- plot_downloads_datetime --> fig7:::fig
+    end
     
-    dw[(db warehouse)] -- query_data_by_funding_agency --> files[[files]] 
-    dw -- query_file_snapshot --> file_summary_data(file_summary_data)
-    file_summary_data -- plot_bar_available_files --> fig2:::fig
-    files -- to_deidentified_export --> data(data) 
-    data -- plot_lollipop_download_by_project --> fig4:::fig
-    data -- plot_downloads_datetime --> fig5:::fig
-    
-    data -- filter --> filtered_data(filtered_data)
-    filtered_data -- plot_lollipop_download_by_project --> fig6:::fig
-    filtered_data -- plot_downloads_datetime --> fig7:::fig
-    
-    studies(Portal - Studies) -- query_data_status_snapshots --> data_status(data_status)
-    data_status -- to_sankey_data --> sankey_data(sankey_data)
-    sankey_data(sankey_data) -- plot_sankey_status --> fig1:::fig
-    
-    GA[(Google Analytics)] -- query_ga --> pageview_data(pageview_data)
-    pageview_data -- plot_pageviews --> fig3:::fig
-    
-    filtered_data -- annotation_join --> data_assay_breakdown(data_assay_breakdown)
-    filtered_data -- to_parsed_format --> data_type_breakdown(data_type_breakdown)
-    data_assay_breakdown -- plot_bar_data_segment --> fig8:::fig
-    data_type_breakdown -- plot_bar_data_segment --> fig9:::fig
-    filtered_data -- to_summary_users --> data_user_summary(data_user_summary)
-    data_user_summary -- plot_user_summary --> fig10:::fig
-    
+    subgraph synapse
+        studies(Portal - Studies) -- query_data_status_snapshots --> data_status(data_status)
+        data_status -- to_sankey_data --> sankey_data(sankey_data)
+        sankey_data(sankey_data) -- plot_sankey_status --> fig1:::fig
+
+        filemeta(File meta) --> data_type_breakdown(data_type_breakdown)
+        filemeta(File meta) --> data_assay_breakdown(data_assay_breakdown)
+        filtered_data -- annotation_join --> filemeta
+        data_assay_breakdown -- plot_bar_data_segment --> fig8:::fig
+        data_type_breakdown -- plot_bar_data_segment --> fig9:::fig
+        filtered_data -- to_summary_users --> data_user_summary(data_user_summary)
+        data_user_summary -- plot_user_summary --> fig10:::fig
+    end
+
+    subgraph google
+        studies --> project_stats
+        GA[(Google Analytics)] -- query_ga --> project_stats(project_stats)
+        project_stats -- plot_pageviews --> fig3:::fig
+    end
     
 ```
 
 ### Templates
 
-- Use a starter template for prepping data: `rmarkdown::draft(file = "Data-prep-YYYY-MM", template = "prepare-data-legacy", package = "usagereports")`
+Helper templates are provided for the data prep:
+- For legacy datawarehouse data (purple workflow domain): `rmarkdown::draft(file = "Data-prep-DW-YYYY-MM", template = "prepare-data-legacy", package = "usagereports")`
+- (Comming soon) For Synapse and Google Analytics data (teal and pink workflow domains): `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
+
+Once data prep is done, the report template can be used:
+- (Comming soon) `rmarkdown::draft(file = "Funder-Report-Issue-x", template = "report", package = "usagereports")`
 
 ## Installation
 
