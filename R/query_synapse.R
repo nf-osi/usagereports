@@ -103,10 +103,9 @@ query_annotation <- function(file_ids,
 #' `list(READ = bool, DOWNLOAD = bool)`.
 #'
 #' @param benefactor_id A benefactor id to check; usually a higher-level container, but files can be their own benefactor.
+#' @param principal_id Defaults to "All Synapse users logged in", can use other ids 273949 or 273950 as well. 
 #' @export
-check_public_access <- function(benefactor_id) {
-
-  public <- 273948 # hard-coded group "All Synapse users"
+check_public_access <- function(benefactor_id, principal_id = 273948) {
 
   tryCatch({
     acl_result <- synapser::synRestGET(glue::glue("https://repo-prod.prod.sagebase.org/repo/v1/entity/{benefactor_id}/acl"))$resourceAccess %>%
