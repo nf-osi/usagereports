@@ -1,6 +1,6 @@
 Package: usagereports
-Title: Produce Nice Usage Reports for Funders
-Version: 0.0.0.9300
+Title: Produce Nice Usage Reports
+Version: 0.0.0.9400
 Authors@R: 
     person("Anh Nguyet", "Vu", , "anh.nguyet.vu@sagebase.org", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -8,7 +8,7 @@ Description: This package is downstream of and builds upon the package Sage-Bion
 License: AGPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Imports: 
     cyphr,
     data.table,
@@ -22,11 +22,11 @@ Imports:
     googleAnalyticsR,
     htmltools,
     igraph,
-    nfportalutils,
     lubridate,
     reticulate,
     RMySQL,
     stats,
+    synapser,
     synapseusagereports,
     utils,
     yaml
