@@ -1,4 +1,4 @@
 name: Prepare data from Google Analytics and Synapse
 description: >
-   Prepare data from Google Analytics and Synapse. Complements the main data prep from data warehouse.
+   Prepare data from Google Analytics and Synapse to what final templates. Complements the main data prep from data warehouse.  
 create_dir: TRUE

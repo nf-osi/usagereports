@@ -6,7 +6,7 @@ output:
   html_document:
     df_print: paged
 params:
-  eval: no
+  eval: yes
   eval_conditional: no
   data_dir: '.'
 ---
@@ -19,9 +19,13 @@ library(synapser)
 library(data.table)
 ```
 
+## Notes
+
 Parts of the data prep can technically be done _in parallel_ with the data warehouse data (see sections denoted with **), but in practice it is usually after obtaining the data warehouse data.
 
 All relevant outputs are written to a dedicated `data_dir` directory, which is usually the same as where this data prep template exists.
+
+In params, `eval` represent blocks can be run as "standard", while `eval_conditional` are for blocks that are really more about offering an alternative method or an extra/conditional steps that depends on how the data looks. 
 
 ## Synapse
 
@@ -85,8 +89,8 @@ released_at_end <- data_status[get(end_snapshot) %in% c("Available", "Partially 
 writeLines(released_at_end, glue::glue("{data_dir}/released_at_end.txt"))
 ```
 
-Optionally, use released study ids to create a reference table to include in the report.
-Use whatever table and whatever attributes that makes sense.
+(Optional, depending on DCC) Use released study ids to create a full reference table to include in the report.
+The attributes that makes sense may also vary.
 
 ```{r, eval=params$eval_conditional}
 
@@ -101,7 +105,7 @@ fwrite(released_studies, file = glue::glue("{data_dir}/released_studies_ref.csv"
 
 ### Annotations data prep 
 
-We only visualize file metadata for files that were downloaded (by *non-Sage DCC* users) over the report period.
+For annotations we only visualize file metadata for files that were downloaded (by *non-Sage DCC* users) over the report period.
 Essentially, this is **a join** on `file_ids` from the DW query results with the file metadata currently in a Synapse portal fileview. 
 
 The `file_ids` can be obtained from the archived Synapse data or from your local copy of the DW query data.
@@ -109,10 +113,13 @@ Both methods are shown, but the one that'll be used is the first since it's more
 
 ```{r synapse-query-file-ids-stored, eval=params$eval}
 
-
+archive_tb <- "syn52536910"
+file_ids <- synapser::synTableQuery(glue::glue("select distinct id from {archive_tb} where userGroup <> 'Sage'"), includeRowIdAndRowVersion=FALSE)
+file_ids <- synapser::as.data.frame(file_ids)
+file_ids <- file_ids$id
 ```
 
-(Update `eval` for this other option.)
+(Optional / the other way)
 ```{r synapse-query-file-ids-local, eval=params$eval_conditional}
 
 dw_data <- fread(glue::glue("{data_dir}/download/rawdata_all.csv"))
@@ -146,7 +153,7 @@ length(not_in_fileview)
 For this, depending on the *number* of files and available time, there are several approaches. 
 Get metadata for these files by:
 1. Identifying an old fileview version to use -- though no guarantee that these files were ever annotated.
-2. Manual curation of metadata based on filename/format and using rules which may be specified in your data model/ontology*.
+2. Fill in metadata through some method. Sometimes this is straightforward to do based on filename/format and using rules which may be specified in a data model/ontology*.
 3. Accept that these will be plotted as NA. 
 
 *For example, [EDAM has relationships](http://edamontology.org/relations-and-properties.html) for file formats to data type. 
@@ -380,3 +387,4 @@ Then save.
 fwrite(ga_data, file = glue::glue("{data_dir}/ga_data.csv"))
 
 ```
+
