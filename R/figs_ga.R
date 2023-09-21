@@ -2,7 +2,7 @@
 #'
 #' @inheritParams plot_sankey_status
 plot_col_pageview_ <- function(data) {
-  
+
   project <- sum_pageviews <- data_released <- NULL
   ggplot(data, aes(x = stats::reorder(project, sum_pageviews), y = sum_pageviews, fill = data_released)) +
     geom_col() +
@@ -17,7 +17,7 @@ plot_col_pageview_ <- function(data) {
 #' @inheritParams plot_sankey_status
 #' @export
 plot_dot_pageviews <- function(data) {
-  
+
   status <- sum_pageviews <- NULL
   # Recode data_released
   data$status <- ifelse(data$data_released, "Released data", "No released data")
@@ -40,7 +40,7 @@ plot_dot_pageviews <- function(data) {
 #' @param pictogram Does additional fun stuff with user pictograms, defaults to `FALSE`.
 #' @export
 plot_bar_visitors <- function(data, pictogram = FALSE) {
-  
+
   x <- project <- max_users <- NULL
   p <- ggplot() +
     geom_bar(data = data, aes(x = max_users, y = factor(project)), stat = "identity", fill = default_palette()$primary) +
@@ -52,29 +52,32 @@ plot_bar_visitors <- function(data, pictogram = FALSE) {
           axis.ticks = element_blank(),
           plot.title = element_text(size = 26, margin = margin(0,0,30,0)),
           plot.title.position = "plot")
-  
+
   if(pictogram) {
     u_pict <- data.frame(project = unlist(Map(rep, data$project, data$max_users)),
                          x = unlist(sapply(data$max_users, function(n) 1:n - 0.5) ))
     p <- p + geom_text(data = u_pict, aes(x = x, y = factor(project)), label = "\U1f468", size = 6)
   }
-  
+
   return(p)
 }
 
 
 #' Plot scatter of pageviews x visitors
 #'
-#' This is an alternative that presents pagesviews and visitors together instead of
-#' separately in `plot_dot_pageviews` and `plot_bar_visitors`.
+#' This is a scatter plot that presents pageviews and visitors together instead of
+#' separately in `plot_dot_pageviews` and `plot_bar_visitors`. Pageviews (`sum_pageviews`)
+#' are represented on Y-axis and as point size; visitors (`max_users`) are represented on X-axis.
+#' Points are colored by their release group, which should be in column `data_release_group`.
+#' A threshold value selectively adds `projectId` labels depending on `cutoff`.
 #'
 #' @inheritParams plot_bar_visitors
-#' @param cutoff Cutoff based on visitor number; projects above this have labels that help highlight them as more popular.
+#' @param cutoff Cutoff based on unique visitors; projects above this have labels that help highlight them as more popular.
 #' @export
 plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
-  
+
   project <- max_users <- data_release_group <- sum_pageviews <- NULL
-  p <- ggplot(data, aes(x = max_users, y = sum_pageviews, size = max_users, color = data_release_group, label = project)) +
+  p <- ggplot(data, aes(x = max_users, y = sum_pageviews, size = max_users, color = data_release_group, label = projectId)) +
     geom_point() +
     geom_text(data = subset(data, max_users > cutoff),  hjust = "right", vjust = "bottom", nudge_x = -0.6) +
     theme_minimal() +
@@ -88,6 +91,6 @@ plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
                                   end = default_palette()$highlight),
                        name = "Data Release Group") +
     scale_size_continuous(name = "Visitor Population Size")
-  
+
   return(p)
 }
