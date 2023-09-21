@@ -9,9 +9,12 @@ plot_scatter_pageviews_visitors(data, cutoff = 10)
 \arguments{
 \item{data}{Data from Google Analytics, something like \code{ga_data}.}
 
-\item{cutoff}{Cutoff based on visitor number; projects above this have labels that help highlight them as more popular.}
+\item{cutoff}{Cutoff based on unique visitors; projects above this have labels that help highlight them as more popular.}
 }
 \description{
-This is an alternative that presents pagesviews and visitors together instead of
-separately in \code{plot_dot_pageviews} and \code{plot_bar_visitors}.
+This is a scatter plot that presents pageviews and visitors together instead of
+separately in \code{plot_dot_pageviews} and \code{plot_bar_visitors}. Pageviews (\code{sum_pageviews})
+are represented on Y-axis and as point size; visitors (\code{max_users}) are represented on X-axis.
+Points are colored by their release group, which should be in column \code{data_release_group}.
+A threshold value selectively adds \code{projectId} labels depending on \code{cutoff}.
 }
