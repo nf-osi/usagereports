@@ -69,7 +69,7 @@ flowchart TD
 
 Helper templates are provided for the data prep:
 - For legacy datawarehouse data (purple workflow domain): `rmarkdown::draft(file = "Data-prep-DW-YYYY-MM", template = "prepare-data-legacy", package = "usagereports")`
-- (Comming soon) For Synapse and Google Analytics data (teal and pink workflow domains): `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
+- For Synapse and Google Analytics data (teal and pink workflow domains): `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
 
 Once data prep is done, the report template can be used:
 - (Comming soon) `rmarkdown::draft(file = "Funder-Report-Issue-x", template = "report", package = "usagereports")`
