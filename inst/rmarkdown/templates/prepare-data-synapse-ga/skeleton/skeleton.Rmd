@@ -229,7 +229,7 @@ data_annotations[resourceType == "experimentalData", .N, by = dataType][order(-N
 
 Finally:
 1. Combine any inferred and non-inferred data.
-2. Derive the proportions (though these may still be recalucated later on if categories are merged).
+2. Derive the proportions (though these may still be recalculated later on if categories are merged).
 3. Recode to nice display names if needed.
 
 ```{r synapse-file-meta-combine, eval=params$eval}
