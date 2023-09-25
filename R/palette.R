@@ -16,11 +16,13 @@ default_palette <- function() {
 
 #' All-purpose Synapse palette
 #'
-#' Return max of 10 synapse colors.
+#' Return max of 15 synapse colors.
 #' @export
 syn_palette <- function() {
 
-  p <- c("#376b8b", "#e9b4ce", "#392965", "#f2d7a6", "#0e8177", "#bc590b", "#748dcd", "#af316c", "#aac3d4")
+  p <- c("#376b8b", "#e9b4ce", "#392965", "#f2d7a6", "#0e8177",
+         "#bc590b", "#748dcd", "#af316c", "#aac3d4", "#F0E7E0",
+         "#9186B1", "#59A159", "#303C50", "#636E83", "#941E24")
   return(p)
 }
 

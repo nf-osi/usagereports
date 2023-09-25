@@ -7,5 +7,5 @@
 syn_palette()
 }
 \description{
-Return max of 10 synapse colors.
+Return max of 15 synapse colors.
 }

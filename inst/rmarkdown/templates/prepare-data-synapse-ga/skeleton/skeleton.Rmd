@@ -1,0 +1,390 @@
+---
+title: "Data prep for Synapse and Google Analytics data"
+author: "Your Name"
+date: "The Date"
+output:
+  html_document:
+    df_print: paged
+params:
+  eval: yes
+  eval_conditional: no
+  data_dir: '.'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(usagereports)
+library(synapser)
+library(data.table)
+```
+
+## Notes
+
+Parts of the data prep can technically be done _in parallel_ with the data warehouse data (see sections denoted with **), but in practice it is usually after obtaining the data warehouse data.
+
+All relevant outputs are written to a dedicated `data_dir` directory, which is usually the same as where this data prep template exists.
+
+In params, `eval` represent blocks can be run as "standard", while `eval_conditional` are for blocks that are really more about offering an alternative method or an extra/conditional steps that depends on how the data looks. 
+
+## Synapse
+
+This queries the portal studies table and fileview table on Synapse.
+There is one dependency from the output of the datawarehouse data prep: a list of file ids of interest. 
+The most time-consuming part is likely to be updating file metadata in the backend, if there is a lot of missing annotations. 
+
+First, login.
+```{r synapse-auth, eval=params$eval}
+
+synLogin(authToken = Sys.getenv("SYNAPSE_AUTH_TOKEN"))
+
+```
+
+### Project data statuses prep **
+
+Get data of project status changes over the report period using snaphots of study metadata. 
+A version range needs to be defined for this query that best matches the report period. 
+In this period it corresponds to versions 42 - 93. This can take up to a couple of minutes depending on how many versions are being pulled.
+
+```{r synapse-query-statuses, eval=params$eval}
+data_status <- usagereports::query_data_status_snapshots(vRange = c(41,93),
+                                                         fundingAgency = "NTAP",
+                                                         ref = "syn16787123")
+head(data_status)
+```
+
+Some exploratory inspection of data to see where most status changes occurred.
+```{r, eval=params$eval}
+
+usagereports::sum_data_status_changes(data_status)
+
+```
+
+(Optional) Depend on the inspection above, selection additional "transition timepoints" for better representation. 
+Over the course of a report period, which may be 30-50 weeks (depending on report period and snapshot intervals), there may be a particular week that represents where a lot of action is happening and many projects being transitioned to a new status. 
+If there is such a transition week to highlight, put it in `selected`, otherwise just select start and end.
+```{r, eval=params$eval_conditional}
+
+sankey_data_status <- usagereports::to_sankey_data(data_status, selected = "2022-08-29")
+
+```
+
+Then save the results in the `data` folder.
+```{r synapse-status-save, eval=params$eval}
+
+fwrite(data_status, file = glue::glue("{data_dir}/data_status.csv"))
+fwrite(sankey_data_status, file = glue::glue("{data_dir}/sankey_data_status.csv"))
+```
+
+Save a list of released projects, which is useful for filtering/grouping needed later.
+```{r, eval=params$eval}
+
+start_snapshot <- names(data_status)[2]
+end_snapshot <- last(names(data_status))
+
+# Project IDs that have been released beginning vs end of period
+released_at_start <- data_status[get(start_snapshot) %in% c("Available", "Partially Available"), studyId]
+released_at_end <- data_status[get(end_snapshot) %in% c("Available", "Partially Available"), studyId]
+
+writeLines(released_at_end, glue::glue("{data_dir}/released_at_end.txt"))
+```
+
+(Optional, depending on DCC) Use released study ids to create a full reference table to include in the report.
+The attributes that makes sense may also vary.
+
+```{r, eval=params$eval_conditional}
+
+query_list <- glue::glue_collapse(shQuote(released_at_end), ",")
+released_studies <- synapser::synTableQuery(glue::glue("select studyName, studyId, studyLeads from syn16787123 where studyId in ({query_list})"), includeRowIdAndRowVersion = FALSE)
+released_studies <- synapser::as.data.frame(released_studies)
+released_studies$studyLeads <- sapply(released_studies$studyLeads, function(x) glue::glue_collapse(jsonlite::fromJSON(x), ", "), USE.NAMES = F)
+fwrite(released_studies, file = glue::glue("{data_dir}/released_studies_ref.csv"), row.names = F)
+
+```
+
+
+### Annotations data prep 
+
+For annotations we only visualize file metadata for files that were downloaded (by *non-Sage DCC* users) over the report period.
+Essentially, this is **a join** on `file_ids` from the DW query results with the file metadata currently in a Synapse portal fileview. 
+
+The `file_ids` can be obtained from the archived Synapse data or from your local copy of the DW query data.
+Both methods are shown, but the one that'll be used is the first since it's more convenient to reproduce.
+
+```{r synapse-query-file-ids-stored, eval=params$eval}
+
+archive_tb <- "syn52536910"
+file_ids <- synapser::synTableQuery(glue::glue("select distinct id from {archive_tb} where userGroup <> 'Sage'"), includeRowIdAndRowVersion=FALSE)
+file_ids <- synapser::as.data.frame(file_ids)
+file_ids <- file_ids$id
+```
+
+(Optional / the other way)
+```{r synapse-query-file-ids-local, eval=params$eval_conditional}
+
+dw_data <- fread(glue::glue("{data_dir}/download/rawdata_all.csv"))
+file_ids <- dw_data[userGroup != "Sage", unique(id)]
+```
+
+
+The main breakdown is `resourceType` and `assay`, but we'll show optionally including `dataType` as well.
+In other portals the attributes of interest might differ (for example, a breakdown by "grant theme" or "species" might also be relevant).
+```{r synapse-query-file-ids, eval=params$eval}
+data_annotations <- usagereports::query_annotation(file_ids = file_ids,
+                                                   fileview = "syn16858331",
+                                                   attributes = c("resourceType", "assay", "dataType", "name", "parentId", "projectId"))
+head(data_annotations)
+```
+
+#### Checks
+
+##### Resolve metadata not lookup-able
+
+Check that all file_ids in datawarehouse have been pulled from portal fileview. Differences may be due to:
+- files have been *deleted* so metadata cannot be retrieved
+- scoping of fileview
+- account access not allowing to view file annotations (not logged in)
+
+```{r synapse-file-meta-check, eval=params$eval}
+not_in_fileview <- setdiff(file_ids, as.integer(gsub("syn", "", data_annotations$id)))
+length(not_in_fileview)
+```
+
+For this, depending on the *number* of files and available time, there are several approaches. 
+Get metadata for these files by:
+1. Identifying an old fileview version to use -- though no guarantee that these files were ever annotated.
+2. Fill in metadata through some method. Sometimes this is straightforward to do based on filename/format and using rules which may be specified in a data model/ontology*.
+3. Accept that these will be plotted as NA. 
+
+*For example, [EDAM has relationships](http://edamontology.org/relations-and-properties.html) for file formats to data type. 
+
+We have an example here of method 2, which infers resourceType and dataType. 
+```{r synapse-file-meta-check, eval=params$eval}
+
+inferred <- unique(dw_data[id %in% not_in_fileview, .(id = paste0("syn", id), name = NAME, projectId = project)])
+
+assign_resourceType <- function(x) {
+  if(grepl("jpg|cram|crai", x)) return("experimentalData")
+  if(grepl("png", x)) return(NA_character_) # this one file does not look like experimentalData
+}
+
+assign_datatype <- function(x) {
+  if(grepl("jpg$|png$", x)) return("image")
+  if(grepl("cram$", x)) return("AlignedReads")
+  if(grepl("crai$", x)) return("dataIndex")
+  return(NA_character_)
+}
+
+# This one might be better off with LLM example
+assign_assay <- function(x) {
+  if(grepl("gross tumor pic", x)) return("gross photography")
+  if(grepl("western", x)) return("western blot")
+  if(grepl("cram$|crai$", x)) return("whole exome sequencing") # known samples
+  return(NA_character_)
+}
+
+inferred[, resourceType := sapply(name, assign_resourceType) ]
+inferred[, dataType := sapply(name, assign_datatype) ]
+inferred[, assay := sapply(name, assign_assay) ]
+
+```
+
+##### Resolve metadata due to missing annotations
+
+Let's get a preliminary overview of resoureType `metadata`. 
+In the counts below, we'll check how many files have `NA` for `resourceType`. 
+If the `NA` category is terribly large, time permitting, it is recommended that missing metadata be updated.
+```{r synapse-file-meta-check-1, eval=params$eval}
+
+table(data_annotations$resourceType)
+
+```
+
+There are several prominent types of missing annotations:
+- Regular data files from contributors that contributors have not annotated yet.
+- Non-data files from "Analysis" or "Reports" folders, which are less likely to be annotated.
+- Workflow files from nextflow workflows.
+
+Of these types, the last is the easiest to remedy, while the first two may require the most manual review to remedy.
+After updating the `resourceType` annotations as needed, we can check the sub-breakdowns.
+
+It's less often that either `assay` or `dataType` is missing if `experimentalData` is present (it's "all-or-nothing"), 
+but the breakdowns below should indicate if further manual curation of the metadata is needed.
+
+*Within* `resourceType=experimentalData`, get summary counts for `assay`.
+```{r synapse-file-meta-as-figure-data, eval=params$eval}
+
+data_assay_breakdown <- data_annotations[resourceType == "experimentalData", .N, by = assay][order(-N)]
+
+```
+
+(Optional) Create an additional breakdown or switch out assay for `dataType`.
+```{r synapse-file-meta-as-figure-data, eval=params$eval_conditional}
+
+data_annotations[resourceType == "experimentalData", .N, by = dataType][order(-N)]
+
+```
+
+#### Summarize to plot data
+
+Finally:
+1. Combine any inferred and non-inferred data.
+2. Derive the proportions (though these may still be recalculated later on if categories are merged).
+3. Recode to nice display names if needed.
+
+```{r synapse-file-meta-combine, eval=params$eval}
+
+data_meta_final <- rbind(data_annotations, inferred, fill = TRUE)
+
+```
+
+Summarization for `resourceType`. Also rename anything that needs be presented in a more readable manner.
+```{r synapse-file-meta-as-figure-data, eval=params$eval}
+
+display_names <- c(experimentalData = "experimental data")
+
+total_files <- data_meta_final[, .N]
+meta_resource <- data_meta_final[, .N, by = resourceType][order(-N)][, .(type = "resourceType", resourceType = resourceType, N = N, proportion = N/total_files)]
+
+# display names
+meta_resource[resourceType == "experimentalData", resourceType  := "experimental data"]
+
+fwrite(meta_resource, file = glue::glue("{data_dir}/meta_resource.csv"))
+```
+
+Summarization for `assay`.
+```{r synapse-file-meta-as-figure-data, eval=params$eval}
+
+total_files_xp <- data_meta_final[resourceType == "experimentalData", .N]
+meta_assay <- data_meta_final[resourceType == "experimentalData", .N, by = assay][order(-N)][, .(type = "assay", assay = assay, N = N, proportion = round(N/total_files_xp, 2))] 
+
+fwrite(meta_assay, file = glue::glue("{data_dir}/meta_assay.csv"))
+```
+
+### File access data prep
+
+Note that the API gives access info *at the moment of query*, so this query around the end of the report period only represents the "public access at the end of this report period". 
+It is meant to provide a rough comparison of public files in relation to releases, something like "looks like we have ~50K total public-access files for a total of 20 'released' projects". 
+```{r, eval=params$eval}
+
+FOI <- synapser::synTableQuery(glue::glue("SELECT id,benefactorId FROM syn16858331 WHERE fundingAgency = 'NTAP' AND type = 'file'"))
+FOI <- data.table::as.data.table(synapser::as.data.frame(FOI))
+
+files_by_benefactor <- FOI[, .N, by = .(benefactorId)]
+length(files_by_benefactor$benefactorId) # how many unique benefactors
+```
+
+For the list of benefactor ids, check the "default" public access type that allows registered Synapse users to read and download files.
+This references the principal added with "Make public".
+```{r, eval=params$eval}
+
+public_access_default <- lapply(files_by_benefactor$benefactorId, check_public_access,  principal_id = 273948)
+names(public_access_default) <- files_by_benefactor$benefactorId
+public_access_default <- rbindlist(public_access_default, idcol = "benefactorId")
+
+head(public_access_default)
+```
+
+
+(Optional) Depending on the DCC, one might also want to include the group **273950** (anyone/anonymous users).
+Normally, this is not the case because governance needs to track downloads for governance reasons.
+If using this data as an additional figure or somehow combined with the above, make sure to clarify the semantics, since here "public" means truly public.
+```{r, eval=params$eval_conditional}
+
+public_access_default <- lapply(files_by_benefactor$benefactorId, check_public_access,  principal_id = 273950)
+names(public_access_default) <- files_by_benefactor$benefactorId
+public_access_default <- rbindlist(public_access_default, idcol = "benefactorId")
+
+head(public_access_default)
+```
+
+Join benefactor access table with number of files for each benefactor table to allow summarizing all files by access type.
+```{r, eval=params$eval}
+
+public_access <- merge(files_by_benefactor, public_access_default, by = "benefactorId")
+
+public_read <- public_access[, .(n_files = sum(N)), by = "READ"]
+public_read[, proportion := round(n_files / sum(n_files), digits = 3)]
+
+public_download <- public_access[, .(n_files = sum(N)), by = "DOWNLOAD"]
+public_download[, proportion := round(n_files / sum(n_files), digits = 3)]
+
+public_access_summary <- rbind(public_both[DOWNLOAD == TRUE, .(n_files, proportion)], 
+                               public_read[READ == TRUE, .(n_files, proportion)])                  
+public_access_summary[, tier := c("Files visible and downloadable", "Files visible")] # if downloadable, should always also be readable
+fwrite(public_access_summary, file = glue::glue("{data_dir}/public_access_summary.csv"))
+
+```
+
+## Google Analytics
+
+Google Analytics data needs to be prepped for generating some project-related figures that complement download stats and help point out more popular/active projects. 
+This needs a list of released projects, which was obtained from the Synapse data prep above. 
+
+### Pageviews data prep **
+
+For data access, make sure to get sufficient permissions for the Sage Google Analytics profile.
+
+First, authenticate. This will open a browser window for confirmation.
+```{r ga-auth, eval=params$eval}
+
+googleAnalyticsR::ga_auth()
+
+```
+
+You can confirm that you have access to the relevant view that we'll be querying. 
+The `propertyId` that should be present is 311611973.
+```{r, eval=params$eval}
+
+googleAnalyticsR::ga_account_list("ga4")
+```
+
+Query for project stats. This may take a few minutes.
+```{r, eval=params$eval}
+
+projects <- data_status$studyId
+date_range <- c("2022-09-01", "2023-08-31")
+
+ga_data <- usagereports::query_ga_project_stats(projects = projects, 
+                                                date_range = date_range)
+```
+
+Check out result. For example, the first result has stats broken down by page for that project.
+
+```{r, eval=params$eval}
+first(ga_data)
+```
+
+For summarization: 
+- We'll sum page views for all the pages of that project as total project views. 
+- We'll take the largest number of users seen for any project page and approximate that as maximum number of users for that project.
+
+```{r, eval=params$eval}
+
+ga_data <- rbindlist(ga_data, idcol = "projectId")
+ga_data <- ga_data[, .(sum_pageviews = sum(screenPageViews), max_users = max(totalUsers)), by = "projectId"]
+```
+
+We augment it with release groupings data. 
+We can check expected differences in views between released and non-released studies, given that non-released only have direct contributor/collaborators, while released should have additional community users.
+
+```{r, eval=params$eval}
+
+release_group <- function(id) {
+  if (id %in% released_at_start) "start" else if (id %in% released_at_end) "end"  else "unreleased"
+}
+
+ga_data[, data_released := projectId %in% released_at_end]
+ga_data <- ga_data[, data_release_group := sapply(projectId, release_group)]
+
+ga_data[, .(mean_pageviews = mean(sum_pageviews), median_max_users = median(max_users)), by = .(data_released)]
+
+```
+
+Then save.
+```{r, eval=params$eval}
+
+fwrite(ga_data, file = glue::glue("{data_dir}/ga_data.csv"))
+
+```
+
