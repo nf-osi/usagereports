@@ -14,6 +14,20 @@ plot_downloads_datetime(data, fill = "project", palette)
 \item{palette}{Color palette.}
 }
 \description{
-Bar of downloads over time (day), grouped by project or Sage (NF-OSI) vs. regular users
-Grouping by project becomes problematic when in the future there are 8+ projects, making this hard to read
+Bar of downloads over time, grouped by project or Sage (NF-OSI) vs. regular users.
+}
+\details{
+Some tips:
+\enumerate{
+\item Scaling: \code{date} data is binned into "2 weeks" during plotting by default,
+but the plot x-axis can easily be (re)scaled if needed after examining the result figure, e.g.:
+\code{p <- plot_downloads_datetime(data)}
+\code{p + ggplot2::scale_x_date(date_breaks = "2 months")}
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Depending on the download magnitude, y may preferably use log scaling:
+`p + ggplot2::scale_y_continuous(trans='log2')`
+
+2. Grouping by project can be problematic when there are 8+ projects, making this hard to read.
+}\if{html}{\out{</div>}}
 }

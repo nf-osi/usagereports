@@ -4,15 +4,29 @@
 \alias{plot_bipartite}
 \title{Bipartite network connecting users and projects}
 \usage{
-plot_bipartite(data, hide_user_id = TRUE)
+plot_bipartite(
+  data,
+  project_node_size = 30,
+  user_node_size = 20,
+  hide_user_id = TRUE
+)
 }
 \arguments{
 \item{data}{The data.}
 
+\item{project_node_size}{Node size of porject nodes.}
+
+\item{user_node_size}{Node size of user nodes.}
+
 \item{hide_user_id}{Don't label user nodes with their ids. See details.}
 }
 \description{
+Plot interactions between \code{user}s and \code{project}s.
 User ids are supposed to be random numbers (e.g. 6, 19, 40) and not actual user ids,
 but to keep the display cleaner when there is potentially \emph{a lot} of users, the ids are hidden by default.
-Also, having numbers can be confusing (apparent by questions like: "Does '19' mean the number of users?" -- no, that's just the id).
+Numbers can be confusing (apparent by questions like: "Does '19' mean the number of users?" -- no, that's just the id).
+}
+\details{
+Some tips:
+For scaling, depending on network size, it might be best with experimenting with other \verb{*_node_size} numbers.
 }
