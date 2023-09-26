@@ -42,7 +42,6 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
 #' This expects summary breakdown for core annotation attributes, e.g. a table with cols
 #' `resourceType`, `proportion` and a table with cols `assay`, `proportion`.
 #'
-#' @inheritParams plot_sankey_status
 #' @param rdata Resource type annotation data.
 #' @param adata Assay type annotation data.
 #' @param assay_palette Color palette for assays,
@@ -99,6 +98,7 @@ plot_data_segment <- function(rdata,
 #'
 #' Expects a `data.frame` with `project` and `downloads`.
 #'
+#'
 #' @inheritParams plot_sankey_status
 #' @export
 #' @import ggplot2
@@ -129,8 +129,19 @@ plot_lollipop_download_by_project <- function(data, palette) {
 
 #' Bar plot of downloads over time
 #'
-#' Bar of downloads over time (day), grouped by project or Sage (NF-OSI) vs. regular users
-#' Grouping by project becomes problematic when in the future there are 8+ projects, making this hard to read
+#' Bar of downloads over time, grouped by project or Sage (NF-OSI) vs. regular users.
+#'
+#' Some tips:
+#' 1. Scaling: `date` data is binned into "2 weeks" during plotting by default,
+#' but the plot x-axis can easily be (re)scaled if needed after examining the result figure, e.g.:
+#' `p <- plot_downloads_datetime(data)`
+#' `p + ggplot2::scale_x_date(date_breaks = "2 months")`
+#' ```
+#' Depending on the download magnitude, y may preferably use log scaling:
+#' `p + ggplot2::scale_y_continuous(trans='log2')`
+#'
+#' 2. Grouping by project can be problematic when there are 8+ projects, making this hard to read.
+#'
 #' @inheritParams plot_sankey_status
 #' @param fill Variable to fill by, defaults to "project".
 #' @export
@@ -156,15 +167,24 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
 
 #' Bipartite network connecting users and projects
 #'
+#' Plot interactions between `user`s and `project`s.
 #' User ids are supposed to be random numbers (e.g. 6, 19, 40) and not actual user ids,
 #' but to keep the display cleaner when there is potentially *a lot* of users, the ids are hidden by default.
-#' Also, having numbers can be confusing (apparent by questions like: "Does '19' mean the number of users?" -- no, that's just the id).
+#' Numbers can be confusing (apparent by questions like: "Does '19' mean the number of users?" -- no, that's just the id).
+#'
+#' Some tips:
+#' For scaling, depending on network size, it might be best with experimenting with other `*_node_size` numbers.
 #'
 #' @inheritParams plot_sankey_status
 #' @param hide_user_id Don't label user nodes with their ids. See details.
+#' @param project_node_size Node size of porject nodes.
+#' @param user_node_size Node size of user nodes.
 #' @import igraph
 #' @export
-plot_bipartite <- function(data, hide_user_id = TRUE) {
+plot_bipartite <- function(data,
+                           project_node_size = 30,
+                           user_node_size = 20,
+                           hide_user_id = TRUE) {
 
   project_node_color <- "#6fbeb8"
   user_node_color <- "#af316c"
@@ -174,7 +194,7 @@ plot_bipartite <- function(data, hide_user_id = TRUE) {
   user_node_label <- if(hide_user_id) user_node_color else "white" # obfuscate by using same color as bg
   V(g)$label.color <-  ifelse(V(g)$type, "black", user_node_label)
   V(g)$label.family <- "sans"
-  V(g)$size <- ifelse(V(g)$type, 30,  20)
+  V(g)$size <- ifelse(V(g)$type, project_node_size, user_node_size)
   plot(g, layout = layout_with_fr)
   # return(g)
 }
