@@ -63,12 +63,12 @@ plot_data_segment <- function(rdata,
   p <- ggplot() +
     geom_bar(data = rdata, aes(x = type, y = proportion, fill = resourceType),
              stat = "identity", position = "stack", color = "white") +
-    scale_fill_manual(values = resource_palette, name = "Type") +
+    scale_fill_manual(values = resource_palette, name = "Resource Type") +
     ggnewscale::new_scale_fill() +
     geom_bar(data = adata, aes(x = type, y = proportion, fill = assay),
              stat = "identity", position = "stack", color = "white") +
     scale_fill_manual(values = assay_palette, name = "Assay") +
-    scale_x_discrete(labels = c("Assay", "Type")) # limits = c("resourceType", "assay"))
+    scale_x_discrete(labels = c("Assay", "Resource Type")) # limits = c("resourceType", "assay"))
 
   if(donut) {
     p <- p + theme_void() +
@@ -86,7 +86,7 @@ plot_data_segment <- function(rdata,
     theme(legend.position = "bottom", axis.line.y = element_blank(),
           plot.title = element_text(size = 16, margin = margin(0,0,30,0)),
           plot.title.position = "plot",
-          legend.background = element_rect(color = "gray"),
+          legend.background = element_rect(color = "white"),
           legend.text = element_text(size = 5),
           legend.box = "vertical",
           legend.margin = margin(10,10,10,10))
