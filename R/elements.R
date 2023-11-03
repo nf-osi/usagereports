@@ -30,18 +30,37 @@ summary_stat <- function(value,
 }
 
 
+#' Stat box element
+#'
+#' Similar element to `summary_stat`, but with icon instead of description.
+#'
+#' @inheritParams summary_stat
+#' @export
+increasing_stat <- function(value,
+                            header = NULL,
+                            description = NULL) {
+
+  htmltools::div(class = "stat-box",
+                 htmltools::div(class="stat-header", header),
+                 htmltools::div(fontawesome::fa("arrow-up-right-dots", height = "5em", fill = "#0e8177"),
+                                htmltools::div(class="stat-value", value)))
+
+}
+
+
 #' Apply all formatting for infographic values
 #'
 #' Convenience function to apply a number of formatting options at once.
 #'
 #' @param value Numeric value.
+#' @param percent Add "%" suffix.
 #' @param delta Whether to prepend "+" or "-" if this is a delta value that needs the emphasis.
 #' @export
-info_format <- function(value, delta = TRUE) {
+info_format <- function(value, percent = FALSE, delta = FALSE) {
   formatted <- formatC(value, big.mark = ",")
-  formatted <- paste0(formatted, "%")
+  if(percent) formatted <- paste0(formatted, "%")
   if(delta) {
-    if(value > 0) paste0("+", formatted) else paste0("-", formatted)
+    formatted <- if(value > 0) paste0("+", formatted) else paste0("-", formatted)
   }
   formatted
 }
