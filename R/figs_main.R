@@ -240,8 +240,6 @@ plot_donut_file_tiers <- function(data, palette) {
 #' @param not_expected Number where data not expected.
 #' @param orientation Chart orientation (defaults to "TD", top-down).
 #' @export
-#' @example
-#' # p <- project_flowchart_template(100, 40, 10, 50, 30, 20, 10)
 #'
 project_flowchart_template <- function(
                                    total,
