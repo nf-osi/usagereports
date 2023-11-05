@@ -1,8 +1,9 @@
 # usagereports
 
-This contains query scripts and an Rmarkdown template to generate data usage reports for a funder.
+## Intro
+
+This is an R package with functions and templates to generate data usage reports for a funder.
 **No real data** lives here. 
-To propose a new figure, it is *recommended* that you add a corresponding function to create example data to help users see what data is expected/what shape they need to get their data into.
 
 The collection of functions in `R` are prefixed with their intent:
 - `query_*` : Query and compile data from data warehouse, portal assets, Google Analytics, etc.
@@ -10,6 +11,7 @@ The collection of functions in `R` are prefixed with their intent:
 - `plot_*` : Generate plots that go into the report.
 - `simd_*` : Simulate example data for the corresponding plots.
 
+## Usage 
 There are several ways in which you can view and engage with this package:
 
 1. For heavily guided usage and workflow to put together a full biannual or annual PDF report deliverable for a sponsor funder. 
@@ -69,17 +71,7 @@ Consider contributing if you come up with something that others might also find 
 
 4. As a playground and learning resource for R analytics and Snowflake.
 
-## Development notes
-
-This package is still in development; a version 1.0 is aimed for some time in 2024. Changes to be expected:
-
-- Legacy warehouse functions and templates are deprecated and will be removed in the version 1.0 release.
-- Workflow reconfiguration and new utils that will use Snowflake as the new data warehouse source.
-- Google Analytics and Synapse data prep templates will be split into separate templates for better modularity/understanding.
-
 ### Templates
-
-#### Data prep templates
 
 **Data warehouse (purple domain)**
 - Snowflake template is WIP.
@@ -88,14 +80,13 @@ This package is still in development; a version 1.0 is aimed for some time in 20
 **Synapse (teal domain) and Google Analytics (pink domain)**
 - Set up with `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
 
-#### Reporting template
-
+**Reporting template**  
 Once data prep is done, the report template can be used. Note that not all reporting features may apply or are covered for other DCCs, so treat this as a starting point for customization:
 - (Coming soon) `rmarkdown::draft(file = "Funder-Report-Issue-x", template = "report", package = "usagereports")`
 
 ## Installation
 
-### OS dependencies installation
+### OS dependencies
 
 This needs `libsodium` for encrypting/de-encrypting some data.
 - deb: `libsodium-dev` (Debian, Ubuntu, etc)
@@ -118,8 +109,21 @@ Then:
 - `devtools::install_github("nf-osi/usagereports")`
 - (Or for potential contributors) Clone this repo and install locally with: `devtools::install()`
 
-### Snowflake connection deps
+### Snowflake dependencies
 
 For using reporting utils with Snowflake infra, you'll need to install drivers and follow docs here:
 https://developers.snowflake.com/odbc/
 
+## Development notes
+
+This package is still in development; a version 1.0 is aimed for some time in 2024. Changes to be expected:
+
+- Legacy warehouse functions and templates are deprecated and will be removed in the version 1.0 release.
+- Workflow reconfiguration and new utils that will use Snowflake as the new data warehouse source.
+- Google Analytics and Synapse data prep templates will be split into separate templates for better modularity/understanding.
+- Setting up more package checks and tests.
+
+### Contributing guide
+
+- Create a branch for changes and make a pull request against `main`.
+- To propose a new figure, it is *recommended* that you add a corresponding function to create example data to help users see what data is expected/what shape they need to get their data into.
