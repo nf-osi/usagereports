@@ -75,7 +75,6 @@ Consider contributing if you come up with something that others might also find 
 
 **Data warehouse (purple domain)**
 - Snowflake template is WIP.
-- If you still need to use legacy data warehouse, *install package at v0.0.9600* and set up with: `rmarkdown::draft(file = "Data-prep-DW-YYYY-MM", template = "prepare-data-legacy", package = "usagereports")`
 
 **Synapse (teal domain) and Google Analytics (pink domain)**
 - Set up with `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
@@ -92,36 +91,37 @@ This needs `libsodium` for encrypting/de-encrypting some data.
 - deb: `libsodium-dev` (Debian, Ubuntu, etc)
 - brew: `libsodium-dev` (OSX)
 
-(Only for legacy warehouse)
-SQL db or client:
-- deb: `libmysqlclient-dev` (Debian, Ubuntu, etc)
-- brew: `mysql` (OSX)
-
 ### R dev package dependencies
 
 This relies on a non-CRAN packages that can be installed via `devtools`:
 - `devtools::install_github("davidsjoberg/ggsankey")`
 
-(Only for legacy warehouse)
-
-
 Then: 
 - `devtools::install_github("nf-osi/usagereports")`
 - (Or for potential contributors) Clone this repo and install locally with: `devtools::install()`
 
-### Snowflake dependencies
+### Snowflake dependencies (optional / WIP)
 
-For using reporting utils with Snowflake infra, you'll need to install drivers and follow docs here:
+Snowflake data can be obtained via Worksheets, and it's not absolutely required to configure programmatic access (though can be somewhat more convenient). 
+If you are interested, install drivers and follow docs here:
 https://developers.snowflake.com/odbc/
+
+### Older versions (legacy warehouse)
+
+- If for some reason legacy-specific code needs to be referenced, the best option is to install package at [this commit](https://github.com/nf-osi/usagereports/commit/441ff039f923bb1b780a56e3b32d16c073caf45e).
+- For this package version you'll also need the SQL db or client on your OS:
+    - deb: `libmysqlclient-dev` (Debian, Ubuntu, etc)
+    - brew: `mysql` (OSX)
+- And also install the R dependency `devtools::install_github("Sage-Bionetworks/synapseusagereports")`.
 
 ## Development notes
 
-This package is still in development; a version 1.0 is aimed for some time in 2024. Changes to be expected:
+This package is in development and will depend on a new backend (itself also in development) being stabilized. 
+Version 1.0 is possible some time in 2024, and current developments are focused on:
 
-- Legacy warehouse functions and templates are deprecated and will be removed in the version 1.0 release.
-- Workflow reconfiguration and new utils that will use Snowflake as the new data warehouse source.
-- Google Analytics and Synapse data prep templates will be split into separate templates for better modularity/understanding.
-- Setting up more package checks and tests.
+- Deprecation of legacy warehouse functions and templates and replacing everything as applicable with new backend.
+- Split Google Analytics and Synapse data prep, aiming for greater modularity and greater generalization.
+- Setting up more overall package checks and tests.
 
 ### Contributing guide
 
