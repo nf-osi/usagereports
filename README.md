@@ -69,7 +69,7 @@ flowchart TD
 3. As a good starting place and conceptual catalog of interesting metrics/data products, even if you don't ultimately use any of the queries/plotting utils here. 
 Consider contributing if you come up with something that others might also find useful.
 
-4. As a playground and learning resource for R analytics and Snowflake.
+4. As a playground and learning resource for R analytics.
 
 ### Templates
 
@@ -102,9 +102,11 @@ Then:
 
 ### Snowflake dependencies (optional / WIP)
 
-Snowflake data can be obtained via Worksheets, and it's not absolutely required to configure programmatic access (though can be somewhat more convenient). 
+Snowflake data can be obtained via Worksheets UI, and it's not absolutely required to configure programmatic connection (though it can be somewhat more convenient). 
 If you are interested, install drivers and follow docs here:
 https://developers.snowflake.com/odbc/
+
+There are docs on other options for Snowflake connections here as well: https://github.com/Sage-Bionetworks/snowflake
 
 ### Older versions (legacy warehouse)
 
