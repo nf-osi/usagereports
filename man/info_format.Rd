@@ -4,7 +4,7 @@
 \alias{info_format}
 \title{Apply all formatting for infographic values}
 \usage{
-info_format(value, percent = FALSE, delta = TRUE)
+info_format(value, percent = FALSE, delta = FALSE)
 }
 \arguments{
 \item{value}{Numeric value.}

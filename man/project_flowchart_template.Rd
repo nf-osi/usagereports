@@ -12,7 +12,7 @@ project_flowchart_template(
   under_embargo,
   pending,
   not_expected,
-  orientation = c("TD", "LR")
+  direction = c("TD", "LR")
 )
 }
 \arguments{
@@ -30,9 +30,9 @@ project_flowchart_template(
 
 \item{not_expected}{Number where data not expected.}
 
-\item{orientation}{Chart orientation (defaults to "TD", top-down).}
+\item{direction}{Chart orientation (defaults to "TD" top-down, alternative is "LR" left-right).}
 }
 \description{
-Generate a mermaid.js flowchart breaking down projects into groupings based on data status.
-Can use as a starting point depending on the DCC.
+Generate a GraphViz flowchart breaking down projects into groupings based on data status.
+Intended for use as a starting point.
 }
