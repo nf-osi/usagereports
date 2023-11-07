@@ -100,13 +100,10 @@ Then:
 - `devtools::install_github("nf-osi/usagereports")`
 - (Or for potential contributors) Clone this repo and install locally with: `devtools::install()`
 
-### Snowflake dependencies (optional / WIP)
+### Snowflake dependencies (optional)
 
-Snowflake data can be obtained via Worksheets UI, and it's not absolutely required to configure programmatic connection (though it can be somewhat more convenient). 
-If you are interested, install drivers and follow docs here:
-https://developers.snowflake.com/odbc/
-
-There are docs on other options for Snowflake connections here as well: https://github.com/Sage-Bionetworks/snowflake
+If you'd like to interact with Snowflake without leaving RStudio, see [here](https://solutions.posit.co/connections/db/databases/snowflake/). 
+However, this package can be pretty agnostic about which interface is used, and data can be obtained via the native Worksheets UI or the VSCode extension. 
 
 ### Older versions (legacy warehouse)
 
