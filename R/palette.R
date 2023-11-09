@@ -40,13 +40,15 @@ project_status_palette <- function() {
 #'
 #' @export
 data_status_palette <- function() {
-  p <- c(`Pre-Synapse` = default_palette()$gray1,
-         None = default_palette()$purple1,
-         `Under Embargo`= default_palette()$danger,
-         `Partially Available`= default_palette()$warning,
-         Available = default_palette()$success)
+  p <- c(`Data Not Expected` = "#636E83",
+         `Data Pending` = "#f2d7a6",
+         `Under Embargo`= "#e9b4ce",
+         `Partially Available` = "#aac3d4",
+         `Rolling Release` ="#748dcd",
+         Available = "#125e81")
   return(p)
 }
+
 
 #' Default palette for visualizing resource type
 #'
