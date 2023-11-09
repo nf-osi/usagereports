@@ -1,6 +1,6 @@
 Package: usagereports
 Title: Produce Nice Usage Reports
-Version: 0.0.9610
+Version: 0.0.9620
 Authors@R: 
     person("Anh Nguyet", "Vu", , "anh.nguyet.vu@sagebase.org", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -25,9 +25,7 @@ Imports:
     igraph,
     lubridate,
     reticulate,
-    RMySQL,
     stats,
     synapser,
-    synapseusagereports,
     utils,
     yaml
