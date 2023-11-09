@@ -53,7 +53,7 @@ If drivers have been installed, connect to Snowflake in Rstudio and run the quer
 Otherwise, skip this block and paste query from above into e.g. Snowflake Worksheets UI and export the result data.  
 ```{r}
 
-domain <- "xxx" # mqzfhld-vp00034
+domain <- "xxx"
 uid <- "you@sagebase.org"
 
 con <- DBI::dbConnect(
