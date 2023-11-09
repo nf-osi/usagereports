@@ -160,7 +160,10 @@ project_download_profiles
 ```{r}
 
 top_3_project_prct_share <- round(project_download_profiles[3, Cumulative] * 100)
-cat("The top 3 projects constitute", top_3_project_prct_share, "percent of downloaded data files")
+cat("The top 3 projects constitute", top_3_project_prct_share, "percent of downloaded data files", "\n")
+
+top_5_project_prct_share <- round(project_download_profiles[5, Cumulative] * 100)
+cat("The top 5 projects constitute", top_5_project_prct_share, "percent of downloaded data files", "\n")
   
 ```
 
