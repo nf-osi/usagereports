@@ -19,6 +19,21 @@ plot_donut_file_tiers <- function(data, palette) {
     scale_fill_manual(values = palette, name = "Data Tier") +
     xlim(c(1,4)) +
     theme_void()
-  
+
   return(p)
+}
+
+
+#' Pie chart
+#'
+#' A very generic pie chart for 'status'. See also `plot_donut_file_tiers`.
+#'
+#' @param data Data, expects a column 'status'.
+#'
+plot_pie <- function(data) {
+
+  ggplot(data, aes(x="", y=status, fill=status)) +
+    geom_bar(stat="identity", width=1, color="white") +
+    coord_polar("y", start=0) +
+    theme_void()
 }
