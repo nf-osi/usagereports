@@ -1,0 +1,4 @@
+name: prepare-data-snowflake
+description: >
+   Data prep using snowflake datawarehouse backend
+create_dir: FALSE

@@ -1,0 +1,201 @@
+---
+title: "Data prep for Synapse data"
+author: "Your Name"
+date: "The Date"
+output:
+  html_document:
+    df_print: paged
+params:
+  eval: yes
+  eval_conditional: no
+  data_dir: '.'
+  start_date: "2022-09-01" # expected to change this to customize
+  end_date: "2023-10-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(DBI)
+library(odbc)
+library(usagereports)
+library(data.table)
+
+data_dir <- params$data_dir
+```
+
+## Query for the main data
+
+Use this helper to generate query scoped to projects with released data and whatever time frame applicable to the report.
+```{r}
+
+# Update code here to get your list of project ids of interest
+ids <- c("syn") 
+
+query <- query_filedownload_scoped(params$start_date, 
+                                   params$end_date, 
+                                   ids)
+
+# Review the query
+print(query)
+
+```
+
+(OPTIONAL) Save the query to version-controlled workspace.
+```{r}
+
+cat(query, file = "sf_filedownload_query.sql")
+
+```
+
+
+If drivers have been installed, connect to Snowflake in Rstudio and run the query. 
+Otherwise, skip this block and paste query from above into e.g. Snowflake Worksheets UI and export the result data.  
+```{r}
+
+domain <- "xxx" # mqzfhld-vp00034
+uid <- "you@sagebase.org"
+
+con <- DBI::dbConnect(
+    drv = odbc::odbc(),
+    dsn = "snowflake",
+    server = glue::glue("{domain}.snowflakecomputing.com"),
+    authenticator = "externalbrowser",
+    uid = uid
+)
+
+dat <- DBI::dbGetQuery(con, query)
+
+head(dat)
+
+```
+
+(ALTERNATIVE PATH) Change to `eval=TRUE` and customize the path variable below, then run block to read data into session.
+```{r, eval=FALSE}
+
+exported_data_path <- "path/to/data.csv"
+dat <- fread(exported_data_path)
+```
+
+## Derive and preview stats and figures 
+
+### Basic
+
+#### Total download requests
+
+```{r}
+
+n_downloads <- nrow(dat)
+n_downloads 
+
+```
+
+#### Total unique files
+
+```{r}
+
+n_files <- length(unique(dat$FILE_HANDLE_ID))
+n_files 
+```
+
+
+#### Total unique users
+
+```{r}
+
+n_users <- length(unique(dat$USER_ID))
+n_users 
+```
+
+
+#### Distribution of downloads by users
+
+This answers questions like: 
+- how many unique requests per user
+- How different do users look/are there "power users"?
+
+```{r}
+
+user_download_profiles <- dat[, .N, by = USER_ID]
+user_download_profiles
+
+```
+
+Find the mean/median download for a user. If a power distribution is shown above, these should be very different.
+```{r}
+
+median_download_per_user <- median(user_download_profiles$N)
+mean_download_per_user <- round(mean(user_download_profiles$N))
+  
+cat("median:", median_download_per_user, "\n")
+cat("mean:", mean_download_per_user, "\n")
+
+
+
+```
+
+
+#### Distribution of downloads by projects
+
+Similarly to "power users", downloads can be variably distributed by project.
+
+```{r}
+
+project_download_profiles <- dat[, .N, by = PROJECT_ID]
+project_download_profiles 
+
+```
+
+To get something like "20% of released projects constitute 90% of downloaded data files", arrange projects by descending downloads order, translate to % of total, calculate the cumulative percentage, and decide on desired cutoff.
+```{r}
+
+project_download_profiles <- project_download_profiles[order(N, decreasing = TRUE), ]
+
+project_download_profiles[, Percent := N/n_downloads]
+project_download_profiles[, Cumulative := cumsum(Percent)]
+project_download_profiles
+```
+
+
+```{r}
+
+top_3_project_prct_share <- round(project_download_profiles[3, Cumulative] * 100)
+cat("The top 3 projects constitute", top_3_project_prct_share, "percent of downloaded data files")
+  
+```
+
+```{r}
+
+median_download_per_project <- median(project_download_profiles$N)
+mean_download_per_project <- round(mean(project_download_profiles$N))
+
+cat("median:", median_download_per_project, "\n")
+cat("mean:", mean_download_per_project, "\n")
+
+```
+
+### More complex
+
+#### Network of data users
+
+```{r}
+
+
+```
+
+### Comparisons with other data (e.g. past report periods)
+
+#### X
+
+```{r}
+
+
+```
+
+### Selective write summary data
+
+```{r}
+
+
+
+```
