@@ -140,3 +140,25 @@ plot_downloads_datetime <- function(data, fill = "project", palette) {
   return(p)
 }
 
+
+#' Project and data status grouped bar plot
+#'
+#' @param data Data table, expects `studyStatus` and `dataStatus` columns.
+#' @param palette Palette for fill colors by `dataStatus`. Defaults are provided.
+#' @export
+plot_status <- function(data,
+                        palette = data_status_palette()) {
+
+  ggplot(data, aes(x = studyStatus, y = N, fill = dataStatus)) +
+    geom_col(color = "white") +
+    geom_text(aes(label = N), col = "white", size = 5, position = position_stack(vjust = 0.5)) +
+    scale_fill_manual(values = palette, name = "Data Status") +
+    theme_minimal() +
+    theme(axis.title = element_blank(),
+          axis.text.y= element_text(size = 10, face="bold")) +
+    scale_y_discrete() +
+    xlab("Study Status") +
+    ylab("Data Status") +
+    coord_flip()
+}
+
