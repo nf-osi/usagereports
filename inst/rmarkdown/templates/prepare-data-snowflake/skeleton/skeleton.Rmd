@@ -1,5 +1,5 @@
 ---
-title: "Data prep for Synapse data"
+title: "Data prep for Snowflake data"
 author: "Your Name"
 date: "The Date"
 output:
@@ -9,8 +9,8 @@ params:
   eval: yes
   eval_conditional: no
   data_dir: '.'
-  start_date: "2022-09-01" # expected to change this to customize
-  end_date: "2023-10-31"
+  start_date: "2022-09-01" # customize this date
+  end_date: "2023-10-31"  # customize this date
 ---
 
 ```{r setup, include=FALSE}
@@ -26,11 +26,13 @@ data_dir <- params$data_dir
 
 ## Query for the main data
 
+### Generate main query
+
 Use this helper to generate query scoped to projects with released data and whatever time frame applicable to the report.
 ```{r}
 
-# Update code here to get your list of project ids of interest
-ids <- c("syn") 
+# Update code here to set your list of project ids of interest
+ids <- c("syn123", "syn456") 
 
 query <- query_filedownload_scoped(params$start_date, 
                                    params$end_date, 
@@ -48,9 +50,10 @@ cat(query, file = "sf_filedownload_query.sql")
 
 ```
 
+### Run query to get data in Rstudio
 
-If drivers have been installed, connect to Snowflake in Rstudio and run the query. 
-Otherwise, skip this block and paste query from above into e.g. Snowflake Worksheets UI and export the result data.  
+If drivers have been installed and confirmed to be set up properly, connect to Snowflake (go through the OAuth flow) and run the query. 
+Otherwise, paste query from above into e.g. Snowflake Worksheets UI, export the result data, and skip to the section marked ALTERNATIVE. 
 ```{r}
 
 domain <- "xxx"
@@ -64,13 +67,32 @@ con <- DBI::dbConnect(
     uid = uid
 )
 
-dat <- DBI::dbGetQuery(con, query)
 
+```
+
+Run these "USE" statements once to set role/db/table needed before running actual query...
+```{r}
+
+DBI::dbExecute(con, "USE ROLE DATA_ANALYTICS;")
+DBI::dbExecute(con, "USE WAREHOUSE COMPUTE_XSMALL;")
+DBI::dbExecute(con, "USE DATABASE SYNAPSE_DATA_WAREHOUSE;")
+DBI::dbExecute(con, "USE SCHEMA SYNAPSE;")
+```
+
+Now do query.
+```{r}
+
+dat <- DBI::dbGetQuery(con, query)
+dat <- as.data.table(dat)
+# preview data
 head(dat)
 
 ```
 
-(ALTERNATIVE PATH) Change to `eval=TRUE` and customize the path variable below, then run block to read data into session.
+
+### (ALTERNATIVE WORKFLOW STEP) Run query somewhere else and load data back into Rstudio 
+
+If you were able to do the default above, ignore/delete this section, otherwise change to `eval=TRUE`, customize the path variable below, then run block to read data into session.
 ```{r, eval=FALSE}
 
 exported_data_path <- "path/to/data.csv"
@@ -183,6 +205,28 @@ cat("mean:", mean_download_per_project, "\n")
 
 ```{r}
 
+users_to_projects <- FD[, .N, by = .(USER_ID, PROJECT_ID)]
+setnames(users_to_projects, c("userId", "project", "N"))
+
+par(mar = c(1, 0, 1, 1))
+plot_bipartite(users_to_projects,
+               project_node_size = 18,
+               user_node_size = 7)
+project_node_color <- "#6fbeb8"
+user_node_color <- "#af316c"
+
+par(mar = c(0.5, 4, 0.5, 4))
+legend('topright',
+       legend = c("project", "user"),
+       pt.cex = c(3,2),
+       col = "black",
+       pch=21,
+       pt.bg= c(project_node_color, user_node_color),
+       x.intersp = 1,
+       y.intersp = 2,
+       inset= -0.02,
+       xpd = T)
+
 
 ```
 
@@ -195,10 +239,24 @@ cat("mean:", mean_download_per_project, "\n")
 
 ```
 
-### Selective write summary data
+### Selectively write summary data
 
+Write to file the summary results and tables of interest.
 ```{r}
 
+results <- list(n_downloads = n_downloads, # unfiltered
+                n_files = n_files, # unfiltered
+                
+                fn_downloads = fn_downloads, 
+                fn_files = fn_files, 
+                fn_users = fn_users,
+                mean_download_per_user =  mean_download_per_user,
+                mean_download_per_project = mean_download_per_project,
+                top_3_project_prct_share  = top_3_project_prct_share,
+                percent_projects_with_download = percent_projects_with_download)
 
+yaml::write_yaml(results, "download_stats.yaml")
+
+fwrite(users_to_projects, "user_network.csv")
 
 ```
