@@ -2,30 +2,19 @@
 % Please edit documentation in R/figs_bar.R
 \name{plot_data_segment}
 \alias{plot_data_segment}
-\title{Bar plot of downloads by data attributes}
+\title{Bar plot of downloads by data attribute}
 \usage{
-plot_data_segment(
-  rdata,
-  adata,
-  assay_palette,
-  resource_palette = resource_type_palette(),
-  donut = FALSE
-)
+plot_data_segment(data, palette = NULL)
 }
 \arguments{
-\item{rdata}{Resource type annotation data.}
+\item{data}{Data in long format for plot. Expects cols \code{attribute} with name of attribute,
+\code{value} for the attribute value, and \code{proportion} for the share of that value in the overall data. See details.}
 
-\item{adata}{Assay type annotation data.}
-
-\item{assay_palette}{Color palette for assays,
-which might need more customization since assay annotations can be somewhat project-specific.}
-
-\item{resource_palette}{Color palette for resources -- default uses \code{resource_type_palette()},
-but provide a custom palette if annotations are project-specific.}
-
-\item{donut}{Display as donut/sunburst-like chart.}
+\item{palette}{Optional, manual color palette for customized or consistent fill of the attribute values.
+The default palette handles up to}
 }
 \description{
-This expects summary breakdown for core annotation attributes, e.g. a table with cols
-\code{resourceType}, \code{proportion} and a table with cols \code{assay}, \code{proportion}.
+Convenience proportion plot for annotation attribute.
+See either \code{simd_resourcetype_breakdown} or \code{simd_assay_breakdown} for example data.
+See also \code{plot_status} for very nearly the same plot method with different data.
 }
