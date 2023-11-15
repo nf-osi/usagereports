@@ -13,60 +13,38 @@ plot_col_files_available <- function(data, palette = c("#af316c", "#125E81")) {
   return(p)
 }
 
-#' Bar plot of downloads by data attributes
+#' Bar plot of downloads by data attribute
 #'
-#' This expects summary breakdown for core annotation attributes, e.g. a table with cols
-#' `resourceType`, `proportion` and a table with cols `assay`, `proportion`.
+#' Convenience proportion plot for annotation attribute.
+#' See either `simd_resourcetype_breakdown` or `simd_assay_breakdown` for example data.
+#' See also `plot_status` for very nearly the same plot method with different data.
 #'
-#' @param rdata Resource type annotation data.
-#' @param adata Assay type annotation data.
-#' @param assay_palette Color palette for assays,
-#' which might need more customization since assay annotations can be somewhat project-specific.
-#' @param resource_palette Color palette for resources -- default uses `resource_type_palette()`,
-#' but provide a custom palette if annotations are project-specific.
-#' @param donut Display as donut/sunburst-like chart.
+#' @param data Data in long format for plot. Expects cols `attribute` with name of attribute,
+#' `value` for the attribute value, and `proportion` for the share of that value in the overall data. See details.
+#' @param palette Optional, manual color palette for customized or consistent fill of the attribute values.
+#' The default palette handles up to
 #' @export
 #' @import ggplot2
-plot_data_segment <- function(rdata,
-                              adata,
-                              assay_palette,
-                              resource_palette = resource_type_palette(),
-                              donut = FALSE) {
+plot_data_segment <- function(data,
+                              palette = NULL) {
 
-  proportion <- assay <- resourceType <- type <- NULL
-  adata$type <- "assay"
-  rdata$type <- "resourceType"
-  p <- ggplot() +
-    geom_bar(data = rdata, aes(x = type, y = proportion, fill = resourceType),
-             stat = "identity", position = "stack", color = "white") +
-    scale_fill_manual(values = resource_palette, name = "Resource Type") +
-    ggnewscale::new_scale_fill() +
-    geom_bar(data = adata, aes(x = type, y = proportion, fill = assay),
-             stat = "identity", position = "stack", color = "white") +
-    scale_fill_manual(values = assay_palette, name = "Assay") +
-    scale_x_discrete(labels = c("Assay", "Resource Type")) # limits = c("resourceType", "assay"))
-
-  if(donut) {
-    p <- p + theme_void() +
-      coord_polar("y")
-  } else {
-    p <- p +
-      theme_classic() +
-      xlab("") +
-      ylab("") +
-      theme(axis.text.y = element_text(size = 12),
-            axis.ticks.y = element_blank()) +
-      coord_flip()
+  # Auto-generate palette if custom palette not given
+  if(is.null(palette)) {
+    palette <- usagereports::syn_palette()
   }
-  p <- p + ggtitle("Characterization of data requested") +
-    theme(legend.position = "bottom", axis.line.y = element_blank(),
-          plot.title = element_text(size = 16, margin = margin(0,0,30,0)),
-          plot.title.position = "plot",
-          legend.background = element_rect(color = "white"),
-          legend.text = element_text(size = 5),
-          legend.box = "vertical",
-          legend.margin = margin(10,10,10,10))
-  return(p)
+  p <- ggplot(data, aes(x = attribute, y = proportion, fill = value)) +
+    geom_col(color = "white") +
+    geom_text(aes(label = proportion), col = "white", size = 5, position = position_stack(vjust = 0.5)) +
+    theme_minimal() +
+    theme(axis.title = element_blank(),
+          axis.text.y= element_text(size = 10, face = "bold")) +
+    scale_fill_manual(values = palette, name = "") +
+    scale_y_discrete() +
+    xlab("") +
+    ylab("Proportion") +
+    coord_flip()
+
+  p
 }
 
 

@@ -18,16 +18,18 @@ plot_bipartite <- function(data,
                            project_node_size = 30,
                            user_node_size = 20,
                            hide_user_id = TRUE) {
-  
+
   project_node_color <- "#6fbeb8"
     user_node_color <- "#af316c"
       g <- graph.data.frame(data, directed = TRUE)
       V(g)$type <- igraph::bipartite.mapping(g)$type
       V(g)$color <- ifelse(V(g)$type,  project_node_color, user_node_color)
+
+      # Labels
       user_node_label <- if(hide_user_id) user_node_color else "white" # obfuscate by using same color as bg
-        V(g)$label.color <-  ifelse(V(g)$type, "black", user_node_label)
-        V(g)$label.family <- "sans"
-        V(g)$size <- ifelse(V(g)$type, project_node_size, user_node_size)
-        plot(g, layout = layout_with_fr)
-        # return(g)
+      V(g)$label.color <-  ifelse(V(g)$type, "black", user_node_label)
+      V(g)$label.family <- "sans"
+      V(g)$size <- ifelse(V(g)$type, project_node_size, user_node_size)
+      # plot(g, layout = layout_with_fr) # use vertex.label = NA to hide labels
+      return(g)
 }
