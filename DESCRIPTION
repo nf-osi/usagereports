@@ -1,6 +1,6 @@
 Package: usagereports
 Title: Produce Nice Usage Reports
-Version: 0.0.9620
+Version: 0.0.9630
 Authors@R: 
     person("Anh Nguyet", "Vu", , "anh.nguyet.vu@sagebase.org", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -17,7 +17,7 @@ Imports:
     dplyr,
     fontawesome,
     ggplot2,
-    ggnewscale,
+    ggraph,
     ggsankey,
     glue,
     googleAnalyticsR,
@@ -27,5 +27,6 @@ Imports:
     reticulate,
     stats,
     synapser,
+    tidygraph,
     utils,
     yaml
