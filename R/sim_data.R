@@ -50,6 +50,7 @@ simd_project_download_date <- function() {
   return(data)
 }
 
+
 simd_project_pageview_date <- function() {
 
   date_range <- seq(as.Date("2022-01-01"), by = "day", length.out = 180)
@@ -60,16 +61,25 @@ simd_project_pageview_date <- function() {
   return(data)
 }
 
+#' @import data.table
 simd_assay_breakdown <- function() {
-  data <- data.frame(Type = c("Whole Exome Sequencing", "RNA-seq", "Imaging"),
+
+  data <- data.table(attribute = "Assay",
+                     value = c("whole exome sequencing", "RNA-seq", "immunohistochemistry"),
                      count = c(200, 500, 100))
+  total <- sum(data$count)
+  data[, proportion := count/total]
   return(data)
 
 }
 
-sim_resource_type_breakdown <- function() {
-  data <- data.frame(Type = c("experimentalData", "metadata", "report"),
+#' @import data.table
+simd_resourcetype_breakdown <- function() {
+  data <- data.table(attribute = "Resource Type",
+                     value = c("experimentalData", "metadata", "report"),
                      count = c(700, 60, 40))
+  total <- sum(data$count)
+  data[, proportion := count/total]
   return(data)
 }
 
