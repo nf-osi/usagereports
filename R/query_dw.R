@@ -17,7 +17,7 @@ query_filedownload_scoped <- function(start_date, end_date, ids) {
 
   ids <- gsub("syn", "", ids)
   ids <- glue::glue_collapse(shQuote(ids, "sh"), sep = ",")
-  query <- glue::glue("SELECT distinct file_handle_id,user_id,record_date,project_id FROM filedownload WHERE record_date between date('{{start_date}}') and date('{{end_date}}') and PROJECT_ID in ({{ids}})",
+  query <- glue::glue("SELECT distinct file_handle_id,user_id,record_date,project_id FROM filedownload WHERE record_date between date('{{start_date}}') and date('{{end_date}}') and file_handle_id = downloaded_file_handle_id and PROJECT_ID in ({{ids}})",
                       .open = "{{", .close = "}}")
   query
 }
