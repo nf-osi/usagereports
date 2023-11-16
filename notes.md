@@ -91,4 +91,28 @@ This matrix tries to summarize which questions will be pursued and included in t
 #### What correlates with data use? The funding amount of the project, quantity of data available (which should already depend on the funding), numbers of reads for the related publication, type of data, extent of social media engagement, etc.? (Similar to but larger in scope compared to one of the above.) ⭐⭐⭐ | 🔴
 - Most of this data is outside the scope/a big effort to get.
 
+#### How many experimental data files are there total funded my agency? ⭐⭐⭐ | 🟢
+
+#### How many datasets have been created in my agency's initiative? ⭐⭐⭐ | 🟢
+
+#### How many funded projects have data released? ⭐⭐⭐ | 🟢
+
+#### How many projects will have eligible data release in the next year? ⭐⭐⭐ | 🟡
+
+#### How many visitors from X number of countries have accessed the portal? ⭐⭐⭐ | 🟡
+
+#### How has download requests fluctated in last months? ⭐⭐ | 🟡
+
+#### How many patients samples do we have for a particular assay? (e.g. How many patient whole genome samples are there? How many patient whole exome sequencing samples are there? How many patient RNA sequencing samples are there?)  ⭐⭐⭐ | 🟡
+
+#### How many projects are fully annotated? ⭐⭐⭐ | 🟡
+
+#### How many projects are near release and still need annotations? ⭐⭐ | 🟡
+
+#### How many datasets have been released to external platforms (e.g. cBioportal)? ⭐⭐⭐ | 🟢
+
+#### How many datasets are pending release to external platforms (e.g. cBioportal)? ⭐⭐⭐ | 🟢
+
+
+
 
