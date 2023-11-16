@@ -28,10 +28,11 @@ data_dir <- params$data_dir
 
 ### Generate main query
 
-Use this helper to generate query scoped to projects with released data and whatever time frame applicable to the report.
+First, use this helper to generate query scoped to projects of interest and whatever time frame applicable to the report.
+Projects of interest may mean projects with released data, projects under a certain initiative, projects that you were requested to check, etc.
 ```{r}
 
-# Update code here to set your list of project ids of interest
+# Update code here to set your id list of project ids of interest
 ids <- c("syn123", "syn456") 
 
 query <- query_filedownload_scoped(params$start_date, 
@@ -101,7 +102,7 @@ dat <- fread(exported_data_path)
 
 ## Derive and preview stats and figures 
 
-### Basic
+### Basic stats, UNFILTERED data
 
 #### Total download requests
 
@@ -120,7 +121,6 @@ n_files <- length(unique(dat$FILE_HANDLE_ID))
 n_files 
 ```
 
-
 #### Total unique users
 
 ```{r}
@@ -129,7 +129,36 @@ n_users <- length(unique(dat$USER_ID))
 n_users 
 ```
 
+### Basic stats, FILTERED data (excludes Sage staff)
 
+Where the DCC is also doing data processing, this should reduce download numbers considerably.
+```{r}
+
+# Update this code to obtain staff ids!
+staff_ids <- c("")
+  
+  
+FD <- dat[!USER_ID %in% staff_ids, ]
+
+fn_downloads <- nrow(FD)
+fn_downloads 
+```
+  
+  
+```{r}
+
+fn_users <- length(unique(FD$USER_ID))
+fn_users
+
+```  
+  
+```{r}
+
+fn_files <- length(unique(FD$FILE_HANDLE_ID))
+fn_files 
+```
+  
+  
 #### Distribution of downloads by users
 
 This answers questions like: 
@@ -138,7 +167,7 @@ This answers questions like:
 
 ```{r}
 
-user_download_profiles <- dat[, .N, by = USER_ID]
+user_download_profiles <- FD[, .N, by = USER_ID]
 user_download_profiles
 
 ```
@@ -152,8 +181,6 @@ mean_download_per_user <- round(mean(user_download_profiles$N))
 cat("median:", median_download_per_user, "\n")
 cat("mean:", mean_download_per_user, "\n")
 
-
-
 ```
 
 
@@ -163,22 +190,41 @@ Similarly to "power users", downloads can be variably distributed by project.
 
 ```{r}
 
-project_download_profiles <- dat[, .N, by = PROJECT_ID]
+project_download_profiles <- FD[, .N, by = PROJECT_ID]
+project_download_profiles[, PROJECT_ID := paste0("syn", PROJECT_ID)]
 project_download_profiles 
 
 ```
+
+Plot by projects. (Plot can be log-scaled.)
+```{r}
+
+p <- ggplot(data = project_download_profiles, aes(x = PROJECT_ID, y = N)) + 
+  geom_segment(aes(x = stats::reorder(PROJECT_ID, N), xend = stats::reorder(PROJECT_ID, N), y = 0, yend = N), color = "gray") +
+  geom_point(color = "#748dcd", size = 5) + theme_light() + 
+  labs(x = NULL) + 
+  ggtitle("Download requests by project") + 
+  coord_flip() + 
+  theme(panel.grid.major.y = element_blank(),
+        panel.border = element_blank(), axis.ticks.y = element_blank(), 
+        plot.title = element_text(size = 23, margin = margin(0, 0, 30, 0)), plot.title.position = "plot")
+p
+
+```
+
+
 
 To get something like "20% of released projects constitute 90% of downloaded data files", arrange projects by descending downloads order, translate to % of total, calculate the cumulative percentage, and decide on desired cutoff.
 ```{r}
 
 project_download_profiles <- project_download_profiles[order(N, decreasing = TRUE), ]
 
-project_download_profiles[, Percent := N/n_downloads]
+project_download_profiles[, Percent := N/fn_downloads]
 project_download_profiles[, Cumulative := cumsum(Percent)]
 project_download_profiles
 ```
 
-
+Share by top 3 or top 5 projects.
 ```{r}
 
 top_3_project_prct_share <- round(project_download_profiles[3, Cumulative] * 100)
@@ -199,9 +245,98 @@ cat("mean:", mean_download_per_project, "\n")
 
 ```
 
-### More complex
+Percent of projects that see *any* downloads of the released projects.
+```{r}
 
-#### Network of data users
+project_with_reuse <- nrow(project_download_profiles)
+qualifying_projects <- length(ids)
+
+# similar to "4 out of 5" dentists recommend etc...
+project_reuse_statement <- glue::glue("{project_with_reuse} out of {qualifying_projects }")
+
+percent_projects_with_download <- round((project_with_reuse / qualifying_projects) * 100)
+cat("Percent of released projects that see any data downloads thus far:", percent_projects_with_download, "\n")
+
+```
+
+#### Over time
+
+```{r}
+
+FD[, year_month := format(strptime(RECORD_DATE, "%Y-%m-%d"), "%Y-%m")]
+monthly_downloads <- FD[, .N, by = year_month][order(year_month)]
+monthly_downloads[, diff := (N - shift(N))/shift(N) ]
+mean_mom_prct_change <- round(mean(monthly_downloads$diff, na.rm = TRUE), 2) * 100
+```
+
+Preview plot of the monthly data.
+```{r}
+
+p <- ggplot(data = monthly_downloads, aes_string(x = "year_month", y = "N")) + 
+  geom_col(fill = "#0e8177") +
+  theme_classic() + 
+  ylab("Count") + 
+  xlab("") + 
+  ggtitle("Monthly downloads over the report period") + 
+  theme(legend.position = "bottom", axis.line.y = element_blank(), plot.title = element_text(size = 28, margin = margin(0, 0, 30, 0)), plot.title.position = "plot")
+p
+```
+
+#### Check metadata for files downloaded
+
+Some portal tables are synced into Snowflake once a day. 
+For the easiest example here, we'll obtain the latest annotations by querying Synapse production tables.
+```{r}
+
+synapser::synLogin(authToken = Sys.getenv("SYNAPSE_AUTH_TOKEN"))
+file_ids <- data.table(dataFileHandleId = unique(FD$FILE_HANDLE_ID))
+
+fileview_id <- "synXXXXXXX" # Update your reference fileview here!
+
+# IMPORTANT: Assumes `resourceType` and `assay` are in your common annotations (they should be)
+# If not, change this to select another attribute name that can be used to characterize the files
+# Or optionally add another attribute of interest to the query, e.g. `fileFormat` 
+main <- synapser::synTableQuery(glue::glue("select id, dataFileHandleId, resourceType, assay from {fileview_id}")) %>%
+  synapser::as.data.frame() %>%
+  as.data.table()
+  
+main$dataFileHandleId <- as.integer(main$dataFileHandleId)
+
+# Equivalent to a left join 
+downloaded_meta <- merge(file_ids, main, all.x = TRUE, all.y = FALSE, by = "dataFileHandleId")
+
+```
+
+First, let's see breakdown by resource type.
+```{r}
+
+fd_by_resourcetype <- downloaded_meta[, .N, by = resourceType]
+fd_by_resourcetype 
+```
+
+Let's see that breakdown by `assay` (this should be more granular).
+
+```{r}
+
+downloaded_meta[is.na(assay), assay := "NA"]
+fd_by_assay <- downloaded_meta[, .N, by = assay]
+fd_by_assay
+```
+
+Most likely you'll want number of unique assays that excludes NA.
+```{r}
+
+unique_assays <- fd_by_assay[assay != "NA", .N]
+unique_assays
+
+```
+
+
+### Beyond basic stats, FILTERED data
+
+This section contains more "interesting" plots.
+
+#### Network viz of data users
 
 ```{r}
 
@@ -209,9 +344,11 @@ users_to_projects <- FD[, .N, by = .(USER_ID, PROJECT_ID)]
 setnames(users_to_projects, c("userId", "project", "N"))
 
 par(mar = c(1, 0, 1, 1))
-plot_bipartite(users_to_projects,
-               project_node_size = 18,
-               user_node_size = 7)
+g <- usagereports::plot_bipartite(users_to_projects,
+                                  project_node_size = 18,
+                                  user_node_size = 7)
+
+plot(g, layout = layout_with_fr, vertex.label = NA)
 project_node_color <- "#6fbeb8"
 user_node_color <- "#af316c"
 
@@ -227,36 +364,37 @@ legend('topright',
        inset= -0.02,
        xpd = T)
 
-
 ```
 
-### Comparisons with other data (e.g. past report periods)
-
-#### X
-
-```{r}
-
-
-```
 
 ### Selectively write summary data
 
-Write to file the summary results and tables of interest.
+Example of writing to file the summary results and tables of interest. 
+The "default" shown here is what's used by the report template. 
+However, you may have your own report template or care about only one to two things.
+
 ```{r}
 
 results <- list(n_downloads = n_downloads, # unfiltered
                 n_files = n_files, # unfiltered
-                
+                # filtered:
                 fn_downloads = fn_downloads, 
                 fn_files = fn_files, 
                 fn_users = fn_users,
                 mean_download_per_user =  mean_download_per_user,
                 mean_download_per_project = mean_download_per_project,
                 top_3_project_prct_share  = top_3_project_prct_share,
-                percent_projects_with_download = percent_projects_with_download)
+                project_reuse_statement = project_reuse_statement,
+                percent_projects_with_download = percent_projects_with_download,
+                mean_mom_prct_change = mean_mom_prct_change,
+                unique_assays = unique_assays)
 
 yaml::write_yaml(results, "download_stats.yaml")
 
+fwrite(monthly_downloads, "monthly_downloads.csv")
+fwrite(project_download_profiles, "project_download_profiles.csv")
+fwrite(fd_by_assay, "fd_by_assay.csv")
+fwrite(fd_by_resourcetype, "fd_by_resourcetype.csv")
 fwrite(users_to_projects, "user_network.csv")
 
 ```
