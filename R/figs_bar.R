@@ -41,8 +41,7 @@ plot_data_segment <- function(data,
     scale_fill_manual(values = palette, name = "") +
     scale_y_discrete() +
     xlab("") +
-    ylab("Proportion") +
-    coord_flip()
+    ylab("Proportion")
 
   p
 }
