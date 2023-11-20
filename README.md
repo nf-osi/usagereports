@@ -97,7 +97,7 @@ Not all reporting features may apply or are covered for other DCCs, so treat thi
 
 This needs `libsodium` for encrypting/de-encrypting coded data.
 - deb: `libsodium-dev` (Debian, Ubuntu, etc)
-- brew: `libsodium-dev` (OSX)
+- brew: `libsodium` (OSX)
 
 ### R dev package dependencies
 
