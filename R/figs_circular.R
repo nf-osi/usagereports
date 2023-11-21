@@ -50,8 +50,8 @@ plot_pie <- function(data) {
 #' @export
 fig_class_count <- function(nodes,
                             edges,
-                            seed = 31,
-                            background = "#201037") {
+                            seed = 42,
+                            background = "black") {
 
   set.seed(seed)
 
@@ -60,12 +60,13 @@ fig_class_count <- function(nodes,
 
   # Layering manually because https://github.com/thomasp85/ggraph/issues/230
   ggraph::ggraph(graph, 'circlepack', weight = size) +
-    ggraph::geom_node_circle(aes(filter = level==1, fill = I(fill)), color = "white", size = 0.25) +
+    ggraph::geom_node_circle(aes(filter = level==1, fill = I(fill)), color = "black", size = 0.25) +
     ggraph::geom_node_circle(aes(filter = level==2, fill = I(fill)), color = background, size = 0.25) +
     ggplot2::coord_fixed() +
     ggplot2::theme(legend.position = "FALSE") +
     ggplot2::theme_void() +
-    ggraph::geom_node_label(aes(label = name), repel = TRUE)
+    ggraph::geom_node_text(aes(label = label), repel = TRUE, max.overlaps = 15) +
+    ggraph::geom_node_label(aes(label = group_label), repel = TRUE, max.overlaps = Inf)
 
 }
 
