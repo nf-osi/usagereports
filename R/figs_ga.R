@@ -83,13 +83,6 @@ plot_scatter_pageviews_visitors <- function(data, cutoff = 10) {
     theme_minimal() +
     xlab("Visitors") +
     ylab("Pageviews") +
-    scale_color_manual(labels = c(unreleased = "Unreleased",
-                                  start = "Released before report period",
-                                  end = "Released during report period"),
-                       values = c(unreleased = default_palette()$gray2,
-                                  start = default_palette()$primary,
-                                  end = default_palette()$highlight),
-                       name = "Data Release Group") +
     scale_size_continuous(name = "Visitor Population Size")
 
   return(p)
