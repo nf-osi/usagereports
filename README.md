@@ -2,7 +2,7 @@
 
 ## Intro
 
-This is an R package with functions and templates to generate data usage reports for a funder.
+This is an R package with functions and templates to generate figures for data usage PDF reports or presentations.
 **No real data** lives here. 
 
 The collection of functions in `R` are prefixed with their intent:
@@ -11,12 +11,16 @@ The collection of functions in `R` are prefixed with their intent:
 - `plot_*` : Generate plots that go into the report.
 - `simd_*` : Simulate example data for the corresponding plots.
 
-## Usage
+## Why have a reporting package?
 
-There are several ways in which you can view and engage with this package:
-
-1. For heavily guided usage and workflow to put together a full biannual or annual PDF report deliverable for a sponsor funder. 
-See the flowchart and [templates](#Templates) that support this below; figures are approximately numbered by the order in which they appear in the "suggested" report format.
+1. Sometimes funders or regulatory agencies just prefer/require reports in a PDF or presentation, in a certain format and with plenty of narration and references.
+Also, a dashboard is great for presenting less complicated weekly and monthly metrics, while this is a product meant for annual reports.  
+2. Puts together some good ideas for *which* metrics and *how* to get and present them.
+This is also **a conceptual catalog of figures and an inspirational starting place for interesting metrics/analyses**. 
+See the [ideas doc](https://github.com/nf-osi/usagereports/blob/main/notes.md). 
+**Consider contributing if you come up with something that others might also find useful.**
+3. Aside from individual figures, provide useful [templates](#Templates) for overall integration and how to put them together (see below).
+Figures are approximately numbered by the order in which they appear in the "suggested" report format.
 
 ```mermaid
 
@@ -65,14 +69,9 @@ flowchart TD
     
 ```
 
-2. For *a la carte* generation of just 1-2 figures that you like, e.g to include independently in some slides instead of an entire report. 
-(We still have nice Synapse-default themes/color palettes!)
+4. Build in Synapse-default themes and color palettes.
 
-3. As an inspirational starting place and conceptual catalog of interesting metrics/data products, even if you don't ultimately use any of the queries/plotting utils here. 
-See the [ideas doc](https://github.com/nf-osi/usagereports/blob/main/notes.md). 
-Consider contributing if you come up with something that others might also find useful.
-
-4. As a playground and learning resource for R analytics. For the complementary Snowflake resource, see https://github.com/Sage-Bionetworks/snowflake. 
+5. A playground and learning resource for R, complementary to the Snowflake resource https://github.com/Sage-Bionetworks/snowflake. 
 
 ### Templates
 
