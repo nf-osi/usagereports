@@ -19,7 +19,7 @@ Also, a dashboard is great for presenting less complicated weekly and monthly me
 This is also **a conceptual catalog of figures and an inspirational starting place for interesting metrics/analyses**. 
 See the [ideas doc](https://github.com/nf-osi/usagereports/blob/main/notes.md). 
 **Consider contributing if you come up with something that others might also find useful.**
-3. Aside from individual figures, provide useful [templates](#Templates) for overall integration and how to put them together (see below).
+3. More than just individual figures, provide useful [templates](#Templates) and transformations for overall integration (see below).
 Figures are approximately numbered by the order in which they appear in the "suggested" report format.
 
 ```mermaid
