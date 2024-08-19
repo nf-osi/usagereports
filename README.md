@@ -113,14 +113,6 @@ If you'd like to interact with Snowflake without leaving RStudio (which *does* a
 
 However, this package is also pretty agnostic about which interface is used, so OK to just plug in data exported from the Worksheets UI, SnowSQL (CLI), or VSCode extension.
 
-### Older versions (legacy warehouse)
-
-- If for some reason legacy-specific code needs to be referenced, the best option is to install package at [this commit](https://github.com/nf-osi/usagereports/commit/441ff039f923bb1b780a56e3b32d16c073caf45e).
-- For this package version you'll also need the SQL db or client on your OS:
-    - deb: `libmysqlclient-dev` (Debian, Ubuntu, etc)
-    - brew: `mysql` (OSX)
-- And also install the R dependency `devtools::install_github("Sage-Bionetworks/synapseusagereports")`.
-
 ## Development notes
 
 This package is in development and will depend on a new backend (itself also in development) being stabilized. 
