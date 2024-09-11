@@ -9,7 +9,7 @@ The collection of functions in `R` are prefixed with their intent:
 - `query_*` : Query and compile data from data warehouse, portal assets, Google Analytics, etc.
 - `to_*` : Take data output from `query_*` and massage to the structure needed for specific plots or other forms. 
 - `plot_*` : Generate plots that go into the report.
-- `simd_*` : Simulate example data for the corresponding plots.
+- `simd_*` : Simulate example data for the corresponding plots. For tests and informing users what the data needs to look like when it is retrieved from Synapse or some other souce.
 
 ## Why have a reporting package?
 
