@@ -98,14 +98,17 @@ This needs `libsodium` for encrypting/de-encrypting coded data.
 - deb: `libsodium-dev` (Debian, Ubuntu, etc)
 - brew: `libsodium` (OSX)
 
-### R dev package dependencies
+### R package installs
 
-This relies on a non-CRAN packages that can be installed via `devtools`:
-- `devtools::install_github("davidsjoberg/ggsankey")`
+You will have to use `devtools` for some non-CRAN packages:
 
-Then: 
-- `devtools::install_github("nf-osi/usagereports")`
-- (Or for potential contributors) Clone this repo and install locally with: `devtools::install()`
+```R
+devtools::install_github("davidsjoberg/ggsankey")
+devtools::install_github("nf-osi/usagereports")
+install.packages("odbc")
+```
+
+Note: For potential contributors, clone this repo and install locally with: `devtools::install()`
 
 ### Snowflake connection dependencies (optional)
 
