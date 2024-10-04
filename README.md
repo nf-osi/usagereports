@@ -102,7 +102,7 @@ If you'd like to interact with Snowflake without leaving RStudio (which *does* a
 
 However, this package is also pretty agnostic about which interface is used, so OK to just plug in data exported from the Worksheets UI or the VSCode extension.
 
-### Development Notes
+## Development
 
 Please note that you are using a pre-version 1.0 of the package. 
 
