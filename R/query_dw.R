@@ -1,23 +1,26 @@
-#' Generate query to get users and downloads parameterized by project ids and date range
+#' Helper for looking up studies
 #'
-#' This just helps generate a useful query, which can be submitted through whichever preferred interface,
-#' e.g. Rstudio connection or the Snowflake Worksheets UI.
-#' The result is a table with user and file download records for the projects specified.
-#' It is a good precursor for deriving many other summaries of interest without making more calls,
-#' e.g. from we can get total unique users, distribution of downloads (to identify "power users"),
-#' the network of projects and users via downloads as edges, etc.
+#' Studies can be looked up in a Synapse table *or* Snowflake.
+#' This queries studies by funding agency and data status using Portal - Studies table.
+#' Note: If using a portal table, do not need to log in with `synapser` first as data is anonymous access.
 #'
-#' If you wish to go to just one of the summaries directly, then it's best to use a different query.
-#'
-#' @param start_date Start date for report window in format "YYYY-MM-DD".
-#' @param end_date End date for report window in format "YYYY-MM-DD".
-#' @param ids Character vector of project ids, e.g. `c("syn124", "syn999")`.
+#' @param fundingAgency A single funder name, e.g. "NTAP".
+#' @param dataStatus Data status(es), e.g. c("Available", "Partially Available")
+#' @param table Synapse id of table to use.
+#' @param save Whether to write data to csv. Default `FALSE`.
 #' @export
-query_filedownload_scoped <- function(start_date, end_date, ids) {
+query_study_ids <- function(fundingAgency,
+                            dataStatus,
+                            table = "syn52694652",
+                            save = FALSE) {
 
-  ids <- gsub("syn", "", ids)
-  ids <- glue::glue_collapse(shQuote(ids, "sh"), sep = ",")
-  query <- glue::glue("SELECT distinct file_handle_id,user_id,record_date,project_id FROM filedownload WHERE record_date between date('{{start_date}}') and date('{{end_date}}') and file_handle_id = downloaded_file_handle_id and PROJECT_ID in ({{ids}})",
-                      .open = "{{", .close = "}}")
-  query
+    data_status <- glue::glue_collapse(glue::single_quote(dataStatus), sep = ",")
+    message(glue::glue("Getting a list of all {fundingAgency} projects with specified statuses..."))
+    study_records <- synapser::synTableQuery(glue::glue("SELECT studyId,dataStatus FROM {table} WHERE fundingAgency has ('{fundingAgency}') AND dataStatus in ({data_status})"))
+    study_records <- synapser::as.data.frame(study_records)
+    if(!nrow(study_records)) stop("No study records found!")
+    project_ids <- study_records$studyId
+    if(save) utils::write.csv(study_records, file = glue::glue("study_records.csv"))
+    return(project_ids)
 }
+
