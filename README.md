@@ -15,7 +15,7 @@ The collection of functions in `R` are prefixed with their intent:
 There are several ways in which you can view and engage with this package:
 
 1. For heavily guided usage and workflow to put together a full biannual or annual PDF report deliverable for a sponsor funder. 
-See the supporting flowchart and templates below; figures are approximately numbered by the order in which they appear in the "suggested" report format.
+See the supporting flowchart below; figures are approximately numbered by the order in which they appear in the "suggested" report format.
 
 ```mermaid
 
@@ -69,19 +69,16 @@ flowchart TD
 3. As a good starting place and conceptual catalog of interesting metrics/data products, even if you don't ultimately use any of the queries/plotting utils here. 
 Consider contributing if you come up with something that others might also find useful.
 
-4. As a playground and learning resource for R analytics.
+4. As a playground and learning resource for R data manipulation and Rmarkdown.
 
 ### Templates
 
-**Data warehouse (purple domain)**
-- Snowflake template is WIP.
+#### Examples of overall report
+We have examples of past reports to better show how figures appear. There is even a Streamlit (Python) version of the template! But these are internal, so please reach out.
 
-**Synapse (teal domain) and Google Analytics (pink domain)**
-- Set up with `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
+#### Data prep example templates
 
-**Reporting template**  
-Once data prep is done, the report template can be used. Note that not all reporting features may apply or are covered for other DCCs, so treat this as a starting point for customization:
-- (Coming soon) `rmarkdown::draft(file = "Funder-Report-Issue-x", template = "report", package = "usagereports")`
+**Synapse (teal domain) and Google Analytics (pink domain)**: Set up with `rmarkdown::draft(file = "Data-prep-Syn-GA-YYYY-MM", template = "prepare-data-synapse-ga", package = "usagereports")`
 
 ## Installation
 
@@ -106,22 +103,9 @@ If you'd like to interact with Snowflake without leaving RStudio (which *does* a
 
 However, this package is also pretty agnostic about which interface is used, so OK to just plug in data exported from the Worksheets UI or the VSCode extension.
 
-### Older versions (legacy warehouse)
+### Development Notes
 
-- If for some reason legacy-specific code needs to be referenced, the best option is to install package at [this commit](https://github.com/nf-osi/usagereports/commit/441ff039f923bb1b780a56e3b32d16c073caf45e).
-- For this package version you'll also need the SQL db or client on your OS:
-    - deb: `libmysqlclient-dev` (Debian, Ubuntu, etc)
-    - brew: `mysql` (OSX)
-- And also install the R dependency `devtools::install_github("Sage-Bionetworks/synapseusagereports")`.
-
-## Development notes
-
-This package is in development and will depend on a new backend (itself also in development) being stabilized. 
-Version 1.0 is possible some time in 2024, and current developments are focused on:
-
-- Deprecation of legacy warehouse functions and templates and replacing everything as applicable with new backend.
-- Split Google Analytics and Synapse data prep, aiming for greater modularity and greater generalization.
-- Setting up more overall package checks and tests.
+Please note that you are using a pre-version 1.0 of the package. 
 
 ### Contributing guide
 

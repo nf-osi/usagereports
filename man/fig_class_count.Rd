@@ -4,7 +4,7 @@
 \alias{fig_class_count}
 \title{Hierarchical circle packing}
 \usage{
-fig_class_count(nodes, edges, seed = 31, background = "#201037")
+fig_class_count(nodes, edges, seed = 42, background = "black")
 }
 \arguments{
 \item{nodes}{Nodes data. See \code{simd_class_count} to get example.}

@@ -4,17 +4,19 @@
 \alias{query_study_ids}
 \title{Helper for looking up studies}
 \usage{
-query_study_ids(fundingAgency, data_status, table, save)
+query_study_ids(fundingAgency, dataStatus, table = "syn52694652", save = FALSE)
 }
 \arguments{
-\item{fundingAgency}{An NF funding agency to query for.}
+\item{fundingAgency}{A single funder name, e.g. "NTAP".}
 
-\item{data_status}{Character vector values for data status, defaults to all NF status values.}
+\item{dataStatus}{Data status(es), e.g. c("Available", "Partially Available")}
 
-\item{table}{Reference studies table or whichever table that has information on studies and funding agency.}
+\item{table}{Synapse id of table to use.}
 
-\item{save}{Whether to save a copy of study records to working directory.}
+\item{save}{Whether to write data to csv. Default \code{FALSE}.}
 }
 \description{
-Query studies by funding agency and data status.
+Studies can be looked up in a Synapse table \emph{or} Snowflake.
+This queries studies by funding agency and data status using Portal - Studies table.
+Note: If using a portal table, do not need to log in with \code{synapser} first as data is anonymous access.
 }
