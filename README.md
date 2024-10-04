@@ -2,7 +2,7 @@
 
 ## Intro
 
-This is an R package with functions and templates to generate data usage reports for a funder.
+This is an R package with functions and templates to generate figures for data usage PDF reports or presentations.
 **No real data** lives here. 
 
 The collection of functions in `R` are prefixed with their intent:
@@ -11,8 +11,7 @@ The collection of functions in `R` are prefixed with their intent:
 - `plot_*` : Generate plots that go into the report.
 - `simd_*` : Simulate example data for the corresponding plots.
 
-## Usage 
-There are several ways in which you can view and engage with this package:
+## Why have a reporting package?
 
 1. For heavily guided usage and workflow to put together a full biannual or annual PDF report deliverable for a sponsor funder. 
 See the supporting flowchart below; figures are approximately numbered by the order in which they appear in the "suggested" report format.
@@ -64,7 +63,7 @@ flowchart TD
     
 ```
 
-2. For *a la carte* generation of just 1-2 figures that you like, e.g to include independently in some slides instead of an entire report. 
+4. Build in Synapse-default themes and color palettes.
 
 3. As a good starting place and conceptual catalog of interesting metrics/data products, even if you don't ultimately use any of the queries/plotting utils here. 
 Consider contributing if you come up with something that others might also find useful.
@@ -84,9 +83,9 @@ We have examples of past reports to better show how figures appear. There is eve
 
 ### OS dependencies
 
-This needs `libsodium` for encrypting/de-encrypting some data.
+This needs `libsodium` for encrypting/de-encrypting coded data.
 - deb: `libsodium-dev` (Debian, Ubuntu, etc)
-- brew: `libsodium-dev` (OSX)
+- brew: `libsodium` (OSX)
 
 ### R dev package dependencies
 
